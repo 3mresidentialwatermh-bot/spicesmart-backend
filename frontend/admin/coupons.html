@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Coupons — Admin | SpicesMart</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="layout" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🌶️</div><span>SpicesMart</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">Coupons & Discounts</span>
+      <div class="topbar-actions" style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="openCouponModal()">+ Create Coupon</button>
+      </div>
+    </header>
+
+
+    <main class="page-body">
+      <div class="table-container">
+        <div class="table-header">
+          <span class="table-title">All Coupons</span>
+        </div>
+        <div id="coupons-table-body"><div class="spinner"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- COUPON MODAL -->
+<div class="modal-overlay" id="coupon-modal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title">Create Coupon</span>
+      <button class="modal-close" onclick="closeCouponModal()">✕</button>
+    </div>
+    <form id="coupon-form">
+      <div class="form-group">
+        <label class="form-label">Coupon Code *</label>
+        <input class="form-input" id="c-code" required placeholder="e.g. FESTIVAL20" style="text-transform: uppercase;"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Discount Percentage (%) *</label>
+        <input type="number" class="form-input" id="c-discount" required placeholder="10" min="1" max="100"/>
+      </div>
+      
+      <div class="modal-actions" style="margin-top:24px">
+        <button type="button" class="btn btn-ghost" onclick="closeCouponModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="c-save-btn">Save Coupon</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/admin.js"></script>
+<script src="/js/coupons.js"></script>
+</body>
+</html>

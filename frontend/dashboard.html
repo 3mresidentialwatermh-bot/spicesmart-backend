@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Dashboard — SpicesMart</title>
+  <meta name="description" content="SpicesMart role-based dashboard showing orders, inventory and revenue stats."/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<div id="page-loader" class="page-loader">
+  <div class="spinner"></div>
+  <p style="color:var(--text-muted)">Loading dashboard…</p>
+</div>
+
+<div class="layout" id="app" style="opacity:0;transition:opacity 0.4s">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🌶️</div>
+      <span>SpicesMart</span>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- injected by JS -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">Loading…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-actions">
+        <a href="/shop.html" class="btn btn-primary btn-sm">🛒 Shop</a>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <!-- Stats row -->
+      <div class="stats-grid" id="stats-grid">
+        <!-- filled by JS -->
+      </div>
+
+      <!-- Charts / recent activity row -->
+      <div class="grid-2" style="gap:20px" id="dashboard-body">
+        <!-- filled by JS -->
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

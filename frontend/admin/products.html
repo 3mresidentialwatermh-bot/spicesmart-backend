@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Products — Admin | SpicesMart</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="layout" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🌶️</div><span>SpicesMart</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">Products Management</span>
+      <div class="topbar-actions" style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="openBulkImageModal()">🖼️ Bulk Images</button>
+        <button class="btn btn-outline btn-sm" onclick="openBulkImportModal()">📤 Bulk Import CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
+      </div>
+    </header>
+
+
+    <main class="page-body">
+      <div class="table-container">
+        <div class="table-header">
+          <span class="table-title">All Products</span>
+          <input class="form-input" id="product-search" placeholder="Search…" style="width:200px;padding:7px 12px" oninput="filterProducts(this.value)"/>
+        </div>
+        <div id="products-table-body"><div class="spinner"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-header">
+      <span class="modal-title" id="product-modal-title">Add Product</span>
+      <button class="modal-close" onclick="closeProductModal()">✕</button>
+    </div>
+    <form id="product-form">
+      <input type="hidden" id="product-id"/>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input class="form-input" id="p-name" required placeholder="Turmeric Powder"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">SKU</label>
+          <input class="form-input" id="p-sku" placeholder="TUR-500"/>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Unit *</label>
+          <input class="form-input" id="p-unit" required placeholder="500g, 1kg…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-select" id="p-category">
+            <option value="Powders">Powders</option>
+            <option value="Whole Spices">Whole Spices</option>
+            <option value="Blends">Blends</option>
+            <option value="Premium">Premium</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="p-desc" placeholder="Product description…"></textarea>
+      </div>
+
+      <!-- IMAGE UPLOAD -->
+      <div class="divider"></div>
+      <div class="section-header"><div class="section-title">🖼️ Product Image</div></div>
+      <div class="form-group" style="display:flex;gap:12px;align-items:center">
+        <div id="image-preview" style="width:80px;height:80px;border-radius:10px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;flex-shrink:0">🌶️</div>
+        <div style="flex:1">
+          <input type="hidden" id="p-image-url"/>
+          <input type="file" id="p-image-file" accept="image/*" style="display:none" onchange="handleImageUpload(this)"/>
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('p-image-file').click()">Upload Image</button>
+          <div class="text-muted text-sm" style="margin-top:6px">PNG, JPG, WEBP · Max 5 MB</div>
+          <div id="image-upload-status" class="text-sm" style="margin-top:4px"></div>
+        </div>
+      </div>
+
+      <!-- PRICING -->
+      <div class="divider"></div>
+      <div class="section-header"><div class="section-title">💰 Pricing by Role</div><div class="section-subtitle">Set selling price for each hierarchy level</div></div>
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label">Distributor ₹</label>
+          <input class="form-input" id="p-price-distributor" type="number" min="0" step="0.01" placeholder="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Retailer ₹</label>
+          <input class="form-input" id="p-price-retailer" type="number" min="0" step="0.01" placeholder="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer ₹</label>
+          <input class="form-input" id="p-price-customer" type="number" min="0" step="0.01" placeholder="0"/>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="form-group">
+        <label class="form-label">Initial Stock (Admin Warehouse)</label>
+        <input class="form-input" id="p-stock" type="number" min="0" placeholder="100"/>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" class="btn btn-ghost" onclick="closeProductModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="product-save-btn">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- BULK IMPORT MODAL -->
+<div class="modal-overlay" id="bulk-import-modal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title">📤 Bulk Upload — Products & Prices</span>
+      <button class="modal-close" onclick="closeBulkImportModal()">✕</button>
+    </div>
+    <div style="padding:8px 0">
+
+      <!-- Single CSV explanation -->
+      <div style="background:rgba(255,153,0,0.08);border:1px solid rgba(255,153,0,0.25);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="font-weight:700;color:var(--saffron);margin-bottom:8px;font-size:0.9rem">📋 One CSV does everything</div>
+        <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.8">
+          • <strong>New SKU</strong> → creates the product with prices<br/>
+          • <strong>Existing SKU</strong> → updates name, prices & stock<br/>
+          • Works for products AND pricing in a single file
+        </div>
+      </div>
+
+      <!-- Column reference -->
+      <div class="card-dark" style="margin-bottom:16px">
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Required columns:</div>
+        <table style="width:100%;font-size:0.78rem;border-collapse:collapse">
+          <thead>
+            <tr style="color:var(--saffron)">
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Column</th>
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Example</th>
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Required?</th>
+            </tr>
+          </thead>
+          <tbody style="color:var(--text-secondary)">
+            <tr><td style="padding:4px 8px">name</td><td style="padding:4px 8px">Turmeric Powder</td><td style="padding:4px 8px;color:var(--success)">✓ Yes</td></tr>
+            <tr><td style="padding:4px 8px">sku</td><td style="padding:4px 8px">TUR-500</td><td style="padding:4px 8px;color:var(--success)">✓ Yes</td></tr>
+            <tr><td style="padding:4px 8px">unit</td><td style="padding:4px 8px">500g</td><td style="padding:4px 8px;color:var(--success)">✓ Yes</td></tr>
+            <tr><td style="padding:4px 8px">category</td><td style="padding:4px 8px">Powders</td><td style="padding:4px 8px;color:var(--text-muted)">Optional</td></tr>
+            <tr><td style="padding:4px 8px">distributor_price</td><td style="padding:4px 8px">80</td><td style="padding:4px 8px;color:var(--success)">✓ Yes</td></tr>
+            <tr><td style="padding:4px 8px">retailer_price</td><td style="padding:4px 8px">110</td><td style="padding:4px 8px;color:var(--success)">✓ Yes</td></tr>
+            <tr><td style="padding:4px 8px">customer_price</td><td style="padding:4px 8px">150</td><td style="padding:4px 8px;color:var(--success)">✓ Yes</td></tr>
+            <tr><td style="padding:4px 8px">initial_stock</td><td style="padding:4px 8px">500</td><td style="padding:4px 8px;color:var(--text-muted)">Optional</td></tr>
+            <tr><td style="padding:4px 8px">description</td><td style="padding:4px 8px">Pure quality...</td><td style="padding:4px 8px;color:var(--text-muted)">Optional</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px">
+          <a class="btn btn-ghost btn-sm" href="http://localhost:5000/api/products/sample-csv" download="spicesmart_products_template.csv">
+            ⬇️ Download Template CSV
+          </a>
+          <span style="font-size:0.75rem;color:var(--text-muted);margin-left:10px">Open in Excel / Google Sheets</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select your CSV file</label>
+        <input type="file" id="bulk-import-file" accept=".csv" class="form-input" style="padding:8px"/>
+      </div>
+      <div id="bulk-import-result" style="display:none" class="card-dark"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+        <button class="btn btn-ghost" onclick="closeBulkImportModal()">Cancel</button>
+        <button class="btn btn-primary" id="bulk-import-btn" onclick="runBulkImport()">📤 Import Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- BULK IMAGE MODAL -->
+<div class="modal-overlay" id="bulk-image-modal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title">🖼️ Bulk Upload Images</span>
+      <button class="modal-close" onclick="closeBulkImageModal()">✕</button>
+    </div>
+    <div style="padding:8px 0">
+
+      <div style="background:rgba(255,153,0,0.08);border:1px solid rgba(255,153,0,0.25);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="font-weight:700;color:var(--saffron);margin-bottom:8px;font-size:0.9rem">📋 Naming your files</div>
+        <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.8">
+          Name your images exactly matching the product <strong>SKU</strong>.<br/>
+          Example: If SKU is <code>TUR-500</code>, name the file <code>TUR-500.jpg</code>.<br/>
+          The system will automatically match and attach them.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Images (Multiple allowed)</label>
+        <input type="file" id="bulk-image-files" accept="image/*" multiple class="form-input" style="padding:8px"/>
+      </div>
+      <div id="bulk-image-result" style="display:none" class="card-dark"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+        <button class="btn btn-ghost" onclick="closeBulkImageModal()">Cancel</button>
+        <button class="btn btn-primary" id="bulk-image-btn" onclick="runBulkImageUpload()">📤 Upload Images</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/admin.js"></script>
+<script>initAdminProducts();</script>
+</body>
+</html>
+

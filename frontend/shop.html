@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Shop — SpicesMart</title>
+  <meta name="description" content="Browse and order spices from SpicesMart at your tier price."/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<div class="layout" id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🌶️</div>
+      <span>SpicesMart</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">Loading…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">Shop</span>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search spices…"/>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary btn-sm" id="cart-btn">
+          🛒 Cart <span id="cart-count" style="background:var(--spice-red);color:#fff;border-radius:99px;padding:1px 6px;font-size:0.72rem;margin-left:4px">0</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <!-- Category pills -->
+      <div class="category-pills" id="category-pills">
+        <div class="category-pill active" data-cat="">All</div>
+      </div>
+
+      <!-- Products grid -->
+      <div class="products-grid" id="products-grid">
+        <div class="spinner"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-header">
+    <span class="cart-title">🛒 Your Cart</span>
+    <button onclick="closeCart()" style="background:none;border:none;color:var(--text-muted);font-size:1.4rem;cursor:pointer">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="empty-state"><div class="empty-icon">🛒</div><p>Your cart is empty</p></div>
+  </div>
+  <div class="cart-footer">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input type="text" class="form-input" id="promo-code" placeholder="Promo Code" style="flex:1;text-transform:uppercase"/>
+      <button class="btn btn-outline btn-sm" onclick="applyPromo()">Apply</button>
+    </div>
+    <div id="promo-msg" class="text-sm" style="margin-bottom:8px"></div>
+    <div class="cart-total">
+      <span class="cart-total-label">Total Amount</span>
+      <span class="cart-total-value" id="cart-total">₹0.00</span>
+    </div>
+    <button class="btn btn-primary btn-full btn-lg" id="checkout-btn" onclick="checkout()">
+      💳 Place Order
+    </button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✅ Order Confirmed!</span>
+      <button class="modal-close" onclick="closeCheckoutModal()">✕</button>
+    </div>
+    <div id="checkout-details" style="font-size:0.9rem;line-height:2"></div>
+    <div style="margin-top:24px;display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="window.location.href='/orders.html'">📦 View Orders</button>
+      <button class="btn btn-outline" onclick="closeCheckoutModal()">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/shop.js"></script>
+</body>
+</html>

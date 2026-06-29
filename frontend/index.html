@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SpicesMart — Premium Indian Spices</title>
+  <meta name="description" content="Buy premium Indian spices online. Best prices for customers, retailers, and distributors."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="/css/style.css?v=2"/>
+  <style>
+    body{overflow-x:hidden;margin:0}
+
+    /* ── Navbar ── */
+    .pub-nav{
+      position:sticky;top:0;z-index:200;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 28px;height:62px;
+      background:rgba(10,6,2,0.95);backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,153,0,0.15);
+    }
+    .pub-logo{display:flex;align-items:center;gap:8px;font-size:1.15rem;font-weight:800;color:#fff;text-decoration:none}
+    .pub-nav-right{display:flex;gap:8px;align-items:center}
+
+    /* ── Hero ── */
+    .pub-hero{
+      background: radial-gradient(ellipse 70% 80% at 50% -20%, rgba(245,166,35,0.15), transparent 70%),
+                  linear-gradient(180deg, #050505 0%, #0a0a0a 100%);
+      padding: 72px 28px 60px; text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .pub-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="rgba(255,255,255,0.02)"/></svg>') repeat;
+      pointer-events: none;
+    }
+    .pub-hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.15;margin:0 0 16px; position:relative;}
+    .pub-hero h1 em{
+      font-style:normal;
+      background: linear-gradient(135deg, #F5A623, #C47F0D);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(245,166,35,0.3);
+    }
+    .pub-hero p{color:#A3A3A3;max-width:540px;margin:0 auto 28px;font-size:1.05rem; line-height: 1.6; position:relative;}
+    .trust-pills{display:flex;gap:12px;flex-wrap:wrap;justify-content:center; position:relative;}
+    .trust-pill{background:rgba(245,166,35,0.05);border:1px solid rgba(245,166,35,0.2);border-radius:30px;padding:6px 18px;font-size:0.85rem;color:var(--saffron); font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(10px);}
+
+    /* ── Filter bar ── */
+    .filter-bar{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      padding:14px 28px;border-bottom:1px solid rgba(255,255,255,0.06);
+      background:#0d0803;position:sticky;top:62px;z-index:100;
+    }
+    .f-pill{
+      padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);
+      background:rgba(255,255,255,0.04);color:#a09080;font-size:0.82rem;font-weight:600;
+      cursor:pointer;transition:all 0.15s;
+    }
+    .f-pill:hover,.f-pill.on{background:var(--saffron);color:#1a0800;border-color:var(--saffron)}
+    .f-search{
+      margin-left:auto;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px;padding:7px 16px;color:#fff;font-size:0.88rem;width:200px;
+    }
+    .f-search:focus{outline:none;border-color:var(--saffron)}
+
+    /* ── Product grid ── */
+    .pub-main{padding:40px 28px;max-width:1360px;margin:0 auto}
+    .prod-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:24px;
+    }
+    .prod-card{
+      background:rgba(20,20,20,0.6);border:1px solid rgba(255,255,255,0.08);
+      border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+      transition:transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s, border-color 0.4s;
+      backdrop-filter: blur(16px);
+    }
+    .prod-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(245,166,35,0.15);border-color:rgba(245,166,35,0.4)}
+    .prod-img{height:180px;background:#050505;display:flex;align-items:center;justify-content:center;font-size:4rem;overflow:hidden; position:relative;}
+    .prod-img::after { content:''; position:absolute; inset:0; background: linear-gradient(0deg, rgba(20,20,20,0.8) 0%, transparent 50%); }
+    .prod-img img{width:100%;height:100%;object-fit:cover; transition: transform 0.6s;}
+    .prod-card:hover .prod-img img{transform: scale(1.08);}
+    .prod-body{padding:20px;flex:1;display:flex;flex-direction:column; position:relative; z-index:2;}
+    .prod-cat{font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:var(--saffron);text-transform:uppercase;margin-bottom:6px}
+    .prod-name{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3}
+    .prod-unit{font-size:0.8rem;color:#A3A3A3;margin-bottom:12px}
+    .prod-desc{font-size:0.85rem;color:#737373;line-height:1.5;flex:1;margin-bottom:16px}
+    .prod-price{font-size:1.5rem;font-weight:800;color:var(--saffron);margin-bottom:16px; text-shadow: 0 2px 10px rgba(245,166,35,0.2);}
+    .prod-price small{font-size:0.8rem;font-weight:500;color:#A3A3A3;display:block;margin-top:2px}
+    .prod-btn{
+      width:100%;padding:12px;border-radius:12px;border:none;
+      background: linear-gradient(135deg, #F5A623, #C47F0D); color:#111;font-weight:700;font-size:0.95rem;
+      cursor:pointer;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .prod-btn:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(245,166,35,0.3); color:#000;}
+    .prod-btn:disabled{background:#262626;color:#737373;cursor:not-allowed;transform:none; box-shadow:none;}
+
+    /* ── Auth modal ── */
+    .modal-bg{
+      position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);
+      z-index:500;display:none;align-items:center;justify-content:center;padding:16px;
+    }
+    .modal-bg.show{display:flex}
+    .auth-box{
+      background:#1a1208;border:1px solid rgba(255,153,0,0.25);border-radius:20px;
+      padding:28px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;
+      position:relative;animation:popIn 0.2s ease;
+    }
+    @keyframes popIn{from{transform:scale(0.93);opacity:0}to{transform:scale(1);opacity:1}}
+    .auth-close{position:absolute;top:14px;right:14px;background:transparent;border:none;color:#6a5a4a;font-size:1.3rem;cursor:pointer}
+    .auth-tabs{display:flex;background:#110c04;border-radius:10px;padding:3px;margin-bottom:18px;gap:3px}
+    .a-tab{flex:1;padding:8px;border-radius:8px;border:none;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.15s;background:transparent;color:#6a5a4a}
+    .a-tab.on{background:var(--saffron);color:#1a0800}
+    .auth-err{display:none;background:rgba(220,50,50,0.12);border:1px solid rgba(220,50,50,0.3);border-radius:8px;padding:9px 12px;font-size:0.82rem;color:#ff7070;margin-bottom:12px}
+    .step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:18px;justify-content:center}
+    .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:2px solid rgba(255,153,0,0.3);color:#6a5a4a;transition:all 0.2s}
+    .step-dot.done{background:var(--saffron);color:#1a0800;border-color:var(--saffron)}
+    .step-dot.active{border-color:var(--saffron);color:var(--saffron)}
+    .step-line{flex:1;height:2px;background:rgba(255,153,0,0.15);border-radius:2px;transition:background 0.3s}
+    .step-line.done{background:var(--saffron)}
+
+    /* ── Cart FAB ── */
+    .cart-fab{
+      position:fixed;bottom:24px;right:24px;
+      background:var(--saffron);color:#1a0800;border:none;border-radius:50px;
+      padding:14px 22px;font-weight:700;font-size:0.9rem;cursor:pointer;
+      display:none;align-items:center;gap:10px;
+      box-shadow:0 8px 24px rgba(255,153,0,0.4);z-index:150;
+      animation:slideUp 0.3s ease;
+    }
+    .cart-fab.show{display:flex}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .fab-badge{background:#1a0800;color:var(--saffron);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:800}
+
+    /* ── Misc ── */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .section-divider{border:none;border-top:1px solid rgba(255,153,0,0.1);margin:16px 0}
+    .str-wrap{margin:-4px 0 12px}
+    .str-bar-bg{height:3px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:3px}
+    .str-bar{height:100%;width:0;border-radius:3px;transition:all 0.25s}
+    @media(max-width:540px){.grid-2{grid-template-columns:1fr}.pub-nav{padding:0 14px}.filter-bar,.pub-main{padding-left:14px;padding-right:14px}.auth-box{padding:20px}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="pub-nav">
+  <a class="pub-logo" href="#">🌶️ SpicesMart</a>
+  <div class="pub-nav-right">
+    <button class="btn btn-outline btn-sm" onclick="openAuth('login')">Sign In</button>
+    <button class="btn btn-primary btn-sm" onclick="openAuth('register')">Sign Up Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pub-hero">
+  <h1>India's Finest Spices,<br/><em>Direct to Your Door</em></h1>
+  <p>Browse our full catalogue below — create a free account to order</p>
+  <div class="trust-pills">
+    <span class="trust-pill">🌿 100% Natural</span>
+    <span class="trust-pill">🚀 Pan-India Delivery</span>
+    <span class="trust-pill">💰 Best Prices</span>
+    <span class="trust-pill">🔐 Secure Checkout</span>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <button class="f-pill on" onclick="filterCat(this,'')">All</button>
+  <button class="f-pill" onclick="filterCat(this,'Powders')">🌶️ Powders</button>
+  <button class="f-pill" onclick="filterCat(this,'Whole Spices')">🌿 Whole Spices</button>
+  <button class="f-pill" onclick="filterCat(this,'Blends')">🫙 Blends</button>
+  <button class="f-pill" onclick="filterCat(this,'Premium')">✨ Premium</button>
+  <input class="f-search" id="f-search" type="text" placeholder="🔍 Search spices…" oninput="onSearch(this.value)"/>
+</div>
+
+<!-- PRODUCTS -->
+<div class="pub-main">
+  <div id="pub-status" style="text-align:center;padding:40px;color:#6a5a4a;font-size:0.95rem">Loading products…</div>
+  <div class="prod-grid" id="prod-grid"></div>
+</div>
+
+<!-- CART FAB -->
+<button class="cart-fab" id="cart-fab" onclick="openAuth('login')">
+  <span class="fab-badge" id="fab-count">0</span>
+  <span id="fab-label">View Cart</span>
+</button>
+
+<!-- AUTH MODAL -->
+<div class="modal-bg" id="auth-modal" onclick="bgClose(event)">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:1.8rem">🌶️</div>
+      <div id="auth-title" style="font-size:1.15rem;font-weight:800;color:#fff;margin-top:6px">Welcome to SpicesMart</div>
+      <div id="auth-sub" style="font-size:0.82rem;color:#8a7a6a;margin-top:3px">Sign in to place orders</div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="a-tab on" id="tab-si" onclick="switchTab('login')">Sign In</button>
+      <button class="a-tab" id="tab-su" onclick="switchTab('register')">New Customer</button>
+    </div>
+
+    <div class="auth-err" id="auth-err"></div>
+
+    <!-- ── SIGN IN ── -->
+    <form id="form-login" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="li-email" placeholder="you@example.com" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="li-pass" placeholder="••••••••" required/>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="li-btn" style="margin-top:6px">Sign In →</button>
+      <p style="text-align:center;margin-top:10px;font-size:0.8rem;color:#6a5a4a">
+        New here? <a href="#" onclick="switchTab('register');return false" style="color:var(--saffron)">Create free account</a>
+      </p>
+    </form>
+
+    <!-- ── SIGN UP (2 steps) ── -->
+    <form id="form-register" style="display:none" onsubmit="doRegister(event)">
+
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step-dot done" id="sdot1">1</div>
+        <div class="step-line" id="sline1"></div>
+        <div class="step-dot active" id="sdot2">2</div>
+      </div>
+
+      <!-- STEP 1: Account details -->
+      <div id="reg-step1">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-input" id="su-name" placeholder="Priya Sharma"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile *</label>
+            <input class="form-input" id="su-phone" placeholder="9876543210" maxlength="10"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" class="form-input" id="su-email" placeholder="you@example.com"/>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" class="form-input" id="su-pass" placeholder="Min 6 chars" oninput="updateStrength(this.value)"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm *</label>
+            <input type="password" class="form-input" id="su-conf" placeholder="Same again"/>
+          </div>
+        </div>
+        <div class="str-wrap">
+          <div class="str-bar-bg"><div class="str-bar" id="str-bar"></div></div>
+          <div id="str-lbl" style="font-size:0.72rem;color:#6a5a4a"></div>
+        </div>
+        <button type="button" class="btn btn-primary btn-full" onclick="goStep2()">Next: Delivery Address →</button>
+        <p style="text-align:center;margin-top:10px;font-size:0.8rem;color:#6a5a4a">
+          Already registered? <a href="#" onclick="switchTab('login');return false" style="color:var(--saffron)">Sign in</a>
+        </p>
+      </div>
+
+      <!-- STEP 2: Delivery address -->
+      <div id="reg-step2" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Street Address / House No. *</label>
+          <textarea class="form-textarea" id="su-addr" placeholder="House No., Street, Area, Landmark…" style="height:72px;resize:none"></textarea>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <input class="form-input" id="su-city" placeholder="Mumbai"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">PIN Code *</label>
+            <input class="form-input" id="su-pin" placeholder="400001" maxlength="6"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State *</label>
+          <select class="form-select" id="su-state">
+            <option value="">-- Select State --</option>
+            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option>
+            <option>Assam</option><option>Bihar</option><option>Chhattisgarh</option>
+            <option>Goa</option><option>Gujarat</option><option>Haryana</option>
+            <option>Himachal Pradesh</option><option>Jharkhand</option>
+            <option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option>
+            <option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option>
+            <option>Mizoram</option><option>Nagaland</option><option>Odisha</option>
+            <option>Punjab</option><option>Rajasthan</option><option>Sikkim</option>
+            <option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option>
+            <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
+            <option>Delhi</option><option>Jammu & Kashmir</option><option>Ladakh</option>
+          </select>
+        </div>
+        <hr class="section-divider"/>
+        <div style="display:flex;gap:10px">
+          <button type="button" class="btn btn-ghost" onclick="goStep1()" style="flex:0 0 auto">← Back</button>
+          <button type="submit" class="btn btn-primary" id="su-btn" style="flex:1">Create My Account 🎉</button>
+        </div>
+        <p style="font-size:0.75rem;color:#5a4a3a;text-align:center;margin-top:10px">
+          By creating an account you agree to our terms. Address is used for delivery only.
+        </p>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/api.js?v=2"></script>
+<script src="/js/auth.js?v=2"></script>
+<script>
+// Already logged in → go to shop
+if (getToken() && getUser()) { window.location.replace('/shop.html'); }
+
+/* ─── Products ─────────────────────────────────────── */
+let allProds = [], activeCat = '';
+
+async function loadProducts(cat, search) {
+  const status = document.getElementById('pub-status');
+  const grid   = document.getElementById('prod-grid');
+  status.style.display = 'block';
+  status.textContent = 'Loading products…';
+  grid.innerHTML = '';
+
+  const params = {};
+  if (cat)    params.category = cat;
+  if (search) params.search   = search;
+
+  try {
+    const d = await api.getPublicProducts(params);
+    allProds = d.products || [];
+    renderProds(allProds);
+    status.style.display = 'none';
+  } catch(e) {
+    status.innerHTML = '⚠️ Could not load products. Make sure the server is running.';
+    console.error(e);
+  }
+}
+
+const emo = {Powders:'🌶️','Whole Spices':'🌿',Blends:'🫙',Premium:'✨'};
+
+function renderProds(list) {
+  const grid = document.getElementById('prod-grid');
+  const status = document.getElementById('pub-status');
+
+  if (!list.length) {
+    grid.innerHTML = '';
+    status.style.display = 'block';
+    status.innerHTML = '<div style="padding:40px 0"><span style="font-size:2rem">🔍</span><br/>No products found</div>';
+    return;
+  }
+  status.style.display = 'none';
+
+  grid.innerHTML = list.map(p => {
+    const price = parseFloat(p.my_price || 0);
+    const imgEl = p.image_url
+      ? `<img src="http://localhost:8080${p.image_url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${emo[p.category]||'🌶️'}'"/>`
+      : (emo[p.category] || '🌶️');
+
+    return `<div class="prod-card">
+      <div class="prod-img">${imgEl}</div>
+      <div class="prod-body">
+        <div class="prod-cat">${p.category || 'Spice'}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-unit">📦 ${p.unit || ''}</div>
+        ${p.description ? `<div class="prod-desc">${p.description.substring(0,70)}…</div>` : ''}
+        <div class="prod-price">₹${price.toFixed(2)}<small>Customer price · per ${p.unit || 'unit'}</small></div>
+        ${price > 0
+          ? `<button class="prod-btn" onclick="onAddToCart()">+ Add to Cart</button>`
+          : `<button class="prod-btn" disabled>Not Available</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCat(el, cat) {
+  activeCat = cat;
+  document.querySelectorAll('.f-pill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  loadProducts(cat, document.getElementById('f-search').value.trim());
+}
+
+let sTimer;
+function onSearch(v) { clearTimeout(sTimer); sTimer = setTimeout(() => loadProducts(activeCat, v.trim()), 300); }
+
+function onAddToCart() {
+  // Not logged in — prompt auth
+  openAuth('register');
+}
+
+/* ─── Auth Modal ────────────────────────────────────── */
+function openAuth(tab) {
+  switchTab(tab);
+  document.getElementById('auth-modal').classList.add('show');
+}
+function closeAuth() {
+  document.getElementById('auth-modal').classList.remove('show');
+  clearErr();
+}
+function bgClose(e) { if (e.target === document.getElementById('auth-modal')) closeAuth(); }
+
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('form-login').style.display    = isLogin ? '' : 'none';
+  document.getElementById('form-register').style.display = isLogin ? 'none' : '';
+  document.getElementById('auth-title').textContent = isLogin ? 'Welcome Back' : 'Create Free Account';
+  document.getElementById('auth-sub').textContent   = isLogin ? 'Sign in to place your order' : 'Step 1 of 2 — Account details';
+  document.getElementById('tab-si').classList.toggle('on', isLogin);
+  document.getElementById('tab-su').classList.toggle('on', !isLogin);
+  clearErr();
+  if (!isLogin) goStep1(); // reset to step 1
+}
+
+function clearErr() {
+  const e = document.getElementById('auth-err');
+  e.style.display = 'none'; e.textContent = '';
+}
+function showErr(msg) {
+  const e = document.getElementById('auth-err');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+/* ─── Step navigation ────────────────────────────────── */
+function goStep1() {
+  document.getElementById('reg-step1').style.display = '';
+  document.getElementById('reg-step2').style.display = 'none';
+  document.getElementById('auth-sub').textContent = 'Step 1 of 2 — Account details';
+  document.getElementById('sdot1').className = 'step-dot done';
+  document.getElementById('sdot2').className = 'step-dot active';
+  document.getElementById('sline1').className = 'step-line';
+  clearErr();
+}
+
+function goStep2() {
+  clearErr();
+  const name  = document.getElementById('su-name').value.trim();
+  const phone = document.getElementById('su-phone').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  const conf  = document.getElementById('su-conf').value;
+
+  if (!name)                { showErr('Please enter your full name'); return; }
+  if (!phone || phone.length < 10) { showErr('Please enter a valid 10-digit mobile number'); return; }
+  if (!email || !email.includes('@')) { showErr('Please enter a valid email address'); return; }
+  if (pass.length < 6)      { showErr('Password must be at least 6 characters'); return; }
+  if (pass !== conf)         { showErr('Passwords do not match'); return; }
+
+  // Advance to step 2
+  document.getElementById('reg-step1').style.display = 'none';
+  document.getElementById('reg-step2').style.display = '';
+  document.getElementById('auth-sub').textContent = 'Step 2 of 2 — Delivery address';
+  document.getElementById('sdot2').className = 'step-dot done';
+  document.getElementById('sline1').className = 'step-line done';
+}
+
+/* ─── Password strength ─────────────────────────────── */
+function updateStrength(v) {
+  let s = 0;
+  if (v.length >= 6) s++; if (v.length >= 10) s++;
+  if (/[A-Z]/.test(v)) s++; if (/[0-9]/.test(v)) s++;
+  const bar = document.getElementById('str-bar');
+  const lbl = document.getElementById('str-lbl');
+  const lvls = [
+    {w:'0%',c:'transparent',t:''},
+    {w:'25%',c:'#e74c3c',t:'Weak — too short'},
+    {w:'50%',c:'#f39c12',t:'Fair'},
+    {w:'75%',c:'var(--saffron)',t:'Good'},
+    {w:'100%',c:'#27ae60',t:'Strong ✓'},
+  ];
+  const l = lvls[Math.min(s,4)];
+  bar.style.width = l.w; bar.style.background = l.c; lbl.textContent = l.t;
+}
+
+/* ─── Login ──────────────────────────────────────────── */
+async function doLogin(e) {
+  e.preventDefault(); clearErr();
+  const btn = document.getElementById('li-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const d = await api.login(
+      document.getElementById('li-email').value.trim(),
+      document.getElementById('li-pass').value
+    );
+    setToken(d.token); setUser(d.user);
+    showToast('Welcome back, ' + d.user.name + '! 🌶️', 'success');
+    setTimeout(() => window.location.href = '/shop.html', 600);
+  } catch(ex) {
+    showErr(ex.message || 'Invalid email or password');
+    btn.disabled = false; btn.textContent = 'Sign In →';
+  }
+}
+
+/* ─── Register ───────────────────────────────────────── */
+async function doRegister(e) {
+  e.preventDefault(); clearErr();
+
+  const addr  = document.getElementById('su-addr').value.trim();
+  const city  = document.getElementById('su-city').value.trim();
+  const pin   = document.getElementById('su-pin').value.trim();
+  const state = document.getElementById('su-state').value;
+
+  if (!addr)  { showErr('Please enter your street address'); return; }
+  if (!city)  { showErr('Please enter your city'); return; }
+  if (!state) { showErr('Please select your state'); return; }
+  if (!pin || pin.length !== 6) { showErr('Please enter a valid 6-digit PIN code'); return; }
+
+  const btn = document.getElementById('su-btn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  try {
+    // Step 1: register
+    const d = await api.register({
+      name:     document.getElementById('su-name').value.trim(),
+      email:    document.getElementById('su-email').value.trim(),
+      phone:    document.getElementById('su-phone').value.trim(),
+      password: document.getElementById('su-pass').value,
+    });
+    setToken(d.token); setUser(d.user);
+
+    // Step 2: save address immediately
+    await api.updateProfile({ address: addr, city, state, pincode: pin });
+    const fresh = await api.me();
+    setUser(fresh.user);
+
+    showToast('Account created! Welcome, ' + d.user.name + ' 🎉', 'success');
+    setTimeout(() => window.location.href = '/shop.html', 800);
+  } catch(ex) {
+    showErr(ex.message || 'Registration failed. Please try again.');
+    btn.disabled = false; btn.textContent = 'Create My Account 🎉';
+  }
+}
+
+/* ─── Init ───────────────────────────────────────────── */
+loadProducts();
+</script>
+</body>
+</html>

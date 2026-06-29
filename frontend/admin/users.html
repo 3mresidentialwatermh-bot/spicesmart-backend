@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Users — Admin | SpicesMart</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="layout" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🌶️</div><span>SpicesMart</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">Users Management</span>
+      <div class="topbar-actions">
+        <button class="btn btn-primary btn-sm" onclick="openUserModal()">+ Add User</button>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <!-- Role filter tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="category-pill active" data-role="" onclick="filterUserRole(this,'')">All</button>
+        <button class="category-pill" data-role="distributor" onclick="filterUserRole(this,'distributor')">Distributors</button>
+        <button class="category-pill" data-role="retailer" onclick="filterUserRole(this,'retailer')">Retailers</button>
+        <button class="category-pill" data-role="customer" onclick="filterUserRole(this,'customer')">Customers</button>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <span class="table-title">All Users</span>
+          <span class="text-muted text-sm" id="users-count">—</span>
+        </div>
+        <div id="users-table-body"><div class="spinner"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="user-modal-title">Add User</span>
+      <button class="modal-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <form id="user-form">
+      <input type="hidden" id="user-id"/>
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input class="form-input" id="u-name" required placeholder="Rajesh Sharma"/>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input class="form-input" id="u-email" type="email" required placeholder="user@example.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" id="u-phone" placeholder="9999999999"/>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Role *</label>
+          <select class="form-select" id="u-role" onchange="onRoleChange(this.value)">
+            <option value="distributor">Distributor</option>
+            <option value="retailer">Retailer</option>
+            <option value="customer">Customer</option>
+          </select>
+        </div>
+        <div class="form-group" id="parent-group">
+          <label class="form-label">Parent (Distributor)</label>
+          <select class="form-select" id="u-parent"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <textarea class="form-textarea" id="u-address" placeholder="Full address…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password (default: spices@123)</label>
+        <input class="form-input" id="u-password" type="password" placeholder="Leave blank for default"/>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" class="btn btn-ghost" onclick="closeUserModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="user-save-btn">Save User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/admin.js"></script>
+<script>initAdminUsers();</script>
+</body>
+</html>

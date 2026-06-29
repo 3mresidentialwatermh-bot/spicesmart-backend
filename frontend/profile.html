@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>My Profile — SpicesMart</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    .profile-header {
+      display: flex; align-items: center; gap: 20px;
+      background: var(--surface-2); border-radius: 16px;
+      padding: 24px 28px; margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+    .profile-avatar-big {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 800; color: var(--bg-primary);
+      flex-shrink: 0;
+    }
+    .profile-meta { flex: 1; }
+    .profile-name  { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+    .profile-email { color: var(--text-secondary); font-size: 0.9rem; margin-top: 2px; }
+    .profile-role-badge { margin-top: 6px; }
+
+    .profile-section {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px 24px; margin-bottom: 20px;
+    }
+    .profile-section-title {
+      font-size: 1rem; font-weight: 700; color: var(--text-primary);
+      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .info-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+    }
+    .info-label { color: var(--text-muted); min-width: 110px; }
+    .info-value { color: var(--text-primary); font-weight: 500; }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .profile-header { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout" id="app" style="opacity:0">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🌶️</div><span>SpicesMart</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">?</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">My Profile</span>
+      <div class="topbar-actions">
+        <button class="btn btn-primary btn-sm" onclick="saveProfile()" id="save-btn">💾 Save Changes</button>
+      </div>
+    </header>
+
+    <main class="page-body">
+
+      <!-- Profile header card -->
+      <div class="profile-header" id="profile-header">
+        <div class="profile-avatar-big" id="profile-avatar">?</div>
+        <div class="profile-meta">
+          <div class="profile-name" id="profile-name-display">Loading…</div>
+          <div class="profile-email" id="profile-email-display"></div>
+          <div class="profile-role-badge" id="profile-role-display"></div>
+        </div>
+        <div id="profile-completion" style="text-align:right;font-size:0.85rem;color:var(--text-muted)"></div>
+      </div>
+
+      <!-- NEW CUSTOMER WELCOME BANNER -->
+      <div id="new-user-banner" style="display:none;background:linear-gradient(135deg,rgba(255,153,0,0.15),rgba(255,153,0,0.05));border:1px solid rgba(255,153,0,0.35);border-radius:14px;padding:18px 22px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="font-size:2.2rem">🎉</div>
+          <div>
+            <div style="font-weight:700;color:var(--saffron);font-size:1.05rem;margin-bottom:4px">Welcome to SpicesMart!</div>
+            <div style="color:var(--text-secondary);font-size:0.88rem;line-height:1.6">
+              Your account is created. Please fill your <strong>delivery address</strong> below so we know where to ship your orders.
+              Once done, click <strong>"Save Changes"</strong> then go to the shop 🛒
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <a href="/shop.html" class="btn btn-outline btn-sm">Skip for now → Shop</a>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('f-address').focus()">Fill Address Now ↓</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+        <!-- Left column: Basic Info + Contact -->
+        <div>
+          <!-- Basic Info -->
+          <div class="profile-section">
+            <div class="profile-section-title">👤 Basic Information</div>
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input class="form-input" id="f-name" placeholder="Your full name"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" id="f-email" disabled style="opacity:0.5;cursor:not-allowed"/>
+              <div class="text-muted text-sm" style="margin-top:4px">Email cannot be changed. Contact admin to update.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mobile Number</label>
+              <input class="form-input" id="f-phone" placeholder="+91 98765 43210" maxlength="15"/>
+            </div>
+          </div>
+
+          <!-- Change Password -->
+          <div class="profile-section">
+            <div class="profile-section-title">🔐 Change Password</div>
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input class="form-input" id="f-old-pass" type="password" placeholder="Enter current password"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input class="form-input" id="f-new-pass" type="password" placeholder="Min 6 characters"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm New Password</label>
+              <input class="form-input" id="f-confirm-pass" type="password" placeholder="Re-enter new password"/>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="changePassword()" id="change-pass-btn">Update Password</button>
+          </div>
+        </div>
+
+        <!-- Right column: Address + Business -->
+        <div>
+          <!-- Address -->
+          <div class="profile-section">
+            <div class="profile-section-title">📍 Delivery Address</div>
+            <div class="form-group">
+              <label class="form-label">Street Address / House No.</label>
+              <textarea class="form-textarea" id="f-address" placeholder="House No., Street, Area…" style="height:80px"></textarea>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">City *</label>
+                <input class="form-input" id="f-city" placeholder="Mumbai"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">State *</label>
+                <select class="form-select" id="f-state">
+                  <option value="">Select State</option>
+                  <option>Andhra Pradesh</option><option>Arunachal Pradesh</option>
+                  <option>Assam</option><option>Bihar</option>
+                  <option>Chhattisgarh</option><option>Goa</option>
+                  <option>Gujarat</option><option>Haryana</option>
+                  <option>Himachal Pradesh</option><option>Jharkhand</option>
+                  <option>Karnataka</option><option>Kerala</option>
+                  <option>Madhya Pradesh</option><option>Maharashtra</option>
+                  <option>Manipur</option><option>Meghalaya</option>
+                  <option>Mizoram</option><option>Nagaland</option>
+                  <option>Odisha</option><option>Punjab</option>
+                  <option>Rajasthan</option><option>Sikkim</option>
+                  <option>Tamil Nadu</option><option>Telangana</option>
+                  <option>Tripura</option><option>Uttar Pradesh</option>
+                  <option>Uttarakhand</option><option>West Bengal</option>
+                  <option>Delhi</option><option>Jammu & Kashmir</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">PIN Code</label>
+              <input class="form-input" id="f-pincode" placeholder="400001" maxlength="6"/>
+            </div>
+          </div>
+
+          <!-- Business Info -->
+          <div class="profile-section" id="business-section">
+            <div class="profile-section-title">🏢 Business Information</div>
+            <div class="form-group">
+              <label class="form-label">GST Number (GSTIN)</label>
+              <input class="form-input" id="f-gstin" placeholder="22AAAAA0000A1Z5" maxlength="15" style="letter-spacing:1px;text-transform:uppercase"/>
+              <div class="text-muted text-sm" style="margin-top:4px">Required for GST invoices and B2B transactions</div>
+            </div>
+            <div id="hierarchy-info" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script>
+
+let currentUser = null;
+
+async function initProfile() {
+    currentUser = requireAuth();
+    if (!currentUser) return;
+
+    renderUserInfo();
+    buildSidebar(currentUser.role, 'profile');
+    initSidebarToggle();
+
+    // Fetch fresh user data from server
+    try {
+        const data = await api.me();
+        currentUser = data.user;
+        // Also update localStorage
+        setUser(currentUser);
+    } catch(e) {}
+
+    populateForm(currentUser);
+
+    document.getElementById('app').style.opacity = '1';
+
+    // Show welcome banner for new registrations
+    if (new URLSearchParams(location.search).get('new') === '1') {
+        document.getElementById('new-user-banner').style.display = 'block';
+    }
+}
+
+function populateForm(u) {
+    // Header
+    document.getElementById('profile-avatar').textContent = u.name.charAt(0).toUpperCase();
+    document.getElementById('profile-name-display').textContent = u.name;
+    document.getElementById('profile-email-display').textContent = u.email;
+    document.getElementById('profile-role-display').innerHTML = roleBadge(u.role);
+
+    // Profile completion %
+    const fields = [u.name, u.email, u.phone, u.address, u.city, u.state, u.pincode];
+    const filled = fields.filter(f => f && f.trim()).length;
+    const pct = Math.round((filled / fields.length) * 100);
+    document.getElementById('profile-completion').innerHTML =
+        `<div style="font-size:1.1rem;font-weight:700;color:${pct>=80?'var(--success)':'var(--saffron)'}">${pct}%</div>
+         <div>Profile Complete</div>
+         ${pct < 100 ? '<div style="color:var(--warning);margin-top:4px">Fill address for faster delivery</div>' : ''}`;
+
+    // Form fields
+    document.getElementById('f-name').value    = u.name || '';
+    document.getElementById('f-email').value   = u.email || '';
+    document.getElementById('f-phone').value   = u.phone || '';
+    document.getElementById('f-address').value = u.address || '';
+    document.getElementById('f-city').value    = u.city || '';
+    document.getElementById('f-pincode').value = u.pincode || '';
+    document.getElementById('f-gstin').value   = u.gstin || '';
+
+    // State dropdown
+    const stateEl = document.getElementById('f-state');
+    if (u.state) {
+        for (let opt of stateEl.options) {
+            if (opt.text === u.state) { opt.selected = true; break; }
+        }
+    }
+
+    // Business section only for non-customers
+    document.getElementById('business-section').style.display =
+        u.role === 'customer' ? 'none' : 'block';
+
+    // Hierarchy info
+    const hInfo = document.getElementById('hierarchy-info');
+    if (u.role !== 'admin') {
+        hInfo.innerHTML = `
+            <div class="info-row">
+              <span class="info-label">Reports To</span>
+              <span class="info-value">${u.parent_name || '(None assigned)'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Your Role</span>
+              <span class="info-value">${roleBadge(u.role)}</span>
+            </div>`;
+    }
+}
+
+async function saveProfile() {
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    const payload = {
+        name:    document.getElementById('f-name').value.trim(),
+        phone:   document.getElementById('f-phone').value.trim(),
+        address: document.getElementById('f-address').value.trim(),
+        city:    document.getElementById('f-city').value.trim(),
+        state:   document.getElementById('f-state').value,
+        pincode: document.getElementById('f-pincode').value.trim(),
+        gstin:   document.getElementById('f-gstin').value.trim().toUpperCase(),
+    };
+
+    if (!payload.name) { showToast('Name is required', 'warning'); btn.disabled=false; btn.textContent='💾 Save Changes'; return; }
+
+    try {
+        const data = await api.updateProfile(payload);
+        currentUser = data.user;
+        setUser(currentUser);
+        populateForm(currentUser);
+        showToast('Profile updated successfully!', 'success');
+    } catch(err) {
+        showToast(err.message || 'Failed to update profile', 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = '💾 Save Changes';
+    }
+}
+
+async function changePassword() {
+    const oldPass  = document.getElementById('f-old-pass').value;
+    const newPass  = document.getElementById('f-new-pass').value;
+    const confPass = document.getElementById('f-confirm-pass').value;
+
+    if (!oldPass || !newPass) { showToast('Please fill all password fields', 'warning'); return; }
+    if (newPass.length < 6)   { showToast('New password must be at least 6 characters', 'warning'); return; }
+    if (newPass !== confPass) { showToast('Passwords do not match', 'warning'); return; }
+
+    const btn = document.getElementById('change-pass-btn');
+    btn.disabled = true; btn.textContent = 'Updating…';
+
+    try {
+        await api.changePassword({ old_password: oldPass, new_password: newPass });
+        document.getElementById('f-old-pass').value = '';
+        document.getElementById('f-new-pass').value = '';
+        document.getElementById('f-confirm-pass').value = '';
+        showToast('Password changed successfully!', 'success');
+    } catch(err) {
+        showToast(err.message || 'Failed to change password', 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = 'Update Password';
+    }
+}
+
+initProfile();
+</script>
+</body>
+</html>

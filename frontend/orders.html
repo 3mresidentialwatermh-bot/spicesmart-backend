@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Orders — SpicesMart</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<div class="layout" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🌶️</div><span>SpicesMart</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">Orders</span>
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm" id="toggle-mode-btn" onclick="toggleMode()">📥 Received</button>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <!-- Tabs -->
+      <div style="display:flex;gap:10px;margin-bottom:20px" id="order-tabs">
+        <button class="btn btn-primary btn-sm" data-mode="placed" onclick="switchTab(this,'placed')">My Orders</button>
+        <button class="btn btn-ghost btn-sm" data-mode="received" onclick="switchTab(this,'received')" id="received-tab">Incoming Orders</button>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <span class="table-title" id="orders-title">My Orders</span>
+          <span class="text-muted text-sm" id="orders-count">—</span>
+        </div>
+        <div id="orders-body">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal-overlay" id="order-detail-modal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title" id="order-modal-title">Order #</span>
+      <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    </div>
+    <div id="order-modal-body"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/orders.js"></script>
+</body>
+</html>

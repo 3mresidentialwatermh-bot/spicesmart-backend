@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Inventory — Admin | SpicesMart</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="layout" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🌶️</div><span>SpicesMart</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name" id="sidebar-user-name">…</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger-btn">☰</button>
+      <span class="topbar-title">Inventory Management</span>
+      <div class="topbar-actions">
+        <button class="btn btn-primary btn-sm" onclick="openAdjustModal()">+ Adjust Stock</button>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <!-- Low Stock Alerts -->
+      <div id="alert-banner" class="hidden card-dark" style="background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:0.88rem">
+        <span>⚠️</span>
+        <span id="alert-text"></span>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <span class="table-title">Inventory Overview</span>
+          <div style="display:flex;gap:8px">
+            <select class="form-select" id="owner-filter" style="padding:6px 10px;font-size:0.82rem" onchange="loadInventory()">
+              <option value="">All Owners</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="loadInventory()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div id="inventory-table-body"><div class="spinner"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ADJUST STOCK MODAL -->
+<div class="modal-overlay" id="adjust-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Adjust Stock</span>
+      <button class="modal-close" onclick="closeAdjustModal()">✕</button>
+    </div>
+    <form id="adjust-form">
+      <div class="form-group">
+        <label class="form-label">Product *</label>
+        <select class="form-select" id="adj-product" required></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Owner *</label>
+        <select class="form-select" id="adj-owner" required></select>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Adjustment (+ or -)</label>
+          <input class="form-input" id="adj-qty" type="number" placeholder="+50 or -10"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Set Absolute Qty</label>
+          <input class="form-input" id="adj-absolute" type="number" min="0" placeholder="or set to exact"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" class="btn btn-ghost" onclick="closeAdjustModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/admin.js"></script>
+<script>initAdminInventory();</script>
+</body>
+</html>
