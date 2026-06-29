@@ -27,6 +27,7 @@ def create_app():
     from routes.payments  import payments_bp
     from routes.settings  import settings_bp
     from routes.analytics import analytics_bp
+    from routes.coupons   import coupons_bp
 
     app.register_blueprint(auth_bp,      url_prefix='/api/auth')
     app.register_blueprint(products_bp,  url_prefix='/api/products')
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(payments_bp,  url_prefix='/api/payments')
     app.register_blueprint(settings_bp,  url_prefix='/api/settings')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
+    app.register_blueprint(coupons_bp,   url_prefix='/api/coupons')
 
     with app.app_context():
         db.create_all()

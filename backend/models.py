@@ -170,6 +170,12 @@ class Order(db.Model):
     payment_status = db.Column(db.String(20), default='pending')   # pending|paid|failed
     payment_ref    = db.Column(db.String(100))
     notes          = db.Column(db.Text)
+    
+    tracking_number = db.Column(db.String(100))
+    courier         = db.Column(db.String(100))
+    coupon_code     = db.Column(db.String(50))
+    discount_amount = db.Column(db.Numeric(12, 2), default=0)
+    
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at     = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -189,6 +195,10 @@ class Order(db.Model):
             'payment_status': self.payment_status,
             'payment_ref': self.payment_ref,
             'notes': self.notes,
+            'tracking_number': self.tracking_number,
+            'courier': self.courier,
+            'coupon_code': self.coupon_code,
+            'discount_amount': float(self.discount_amount) if self.discount_amount else 0,
             'items': [i.to_dict() for i in self.items],
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
@@ -233,4 +243,27 @@ class Settings(db.Model):
             'brand_name': self.brand_name,
             'brand_logo_url': self.brand_logo_url,
             'razorpay_key_id': self.razorpay_key_id,
+        }
+
+# ---------------------------------------------
+# Coupons
+# ---------------------------------------------
+class Coupon(db.Model):
+    __tablename__ = 'coupons'
+    
+    id               = db.Column(db.Integer, primary_key=True)
+    code             = db.Column(db.String(50), unique=True, nullable=False)
+    discount_percent = db.Column(db.Numeric(5, 2), nullable=False)
+    valid_until      = db.Column(db.DateTime, nullable=True)
+    is_active        = db.Column(db.Boolean, default=True)
+    created_at       = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'code': self.code,
+            'discount_percent': float(self.discount_percent),
+            'valid_until': self.valid_until.isoformat() if self.valid_until else None,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat()
         }
