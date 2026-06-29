@@ -14,7 +14,7 @@ def create_app():
 
     db.init_app(app)
     JWTManager(app)
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    CORS(app, resources={r"/api/*": {"origins": ["https://spicesmart1.vercel.app", "http://localhost:8080"]}}, supports_credentials=True)
 
 
     # Register blueprints
