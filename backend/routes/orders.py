@@ -276,7 +276,7 @@ def generate_invoice(oid):
             pdf.set_font('helvetica', 'I', 11)
             pdf.cell(0, 10, f'Shipping via {order.courier or "Courier"}: {order.tracking_number}', new_x="LMARGIN", new_y="NEXT")
         
-        pdf_content = pdf.output(dest='S')
+        pdf_content = bytes(pdf.output())
         
         return Response(
             pdf_content,
