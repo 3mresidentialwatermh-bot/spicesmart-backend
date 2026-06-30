@@ -117,6 +117,17 @@ def update_product(pid):
             else:
                 db.session.add(PriceTier(product_id=pid, role=role, price=price_val))
 
+    # Update admin inventory if provided
+    if 'initial_stock' in data:
+        admin_users = User.query.filter_by(role='admin').all()
+        for admin in admin_users:
+            inv = Inventory.query.filter_by(product_id=pid, owner_id=admin.id).first()
+            if inv:
+                inv.quantity = data['initial_stock']
+            else:
+                inv = Inventory(product_id=pid, owner_id=admin.id, quantity=data['initial_stock'])
+                db.session.add(inv)
+
     db.session.commit()
     return jsonify({'product': product.to_dict()})
 

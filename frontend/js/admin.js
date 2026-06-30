@@ -249,9 +249,13 @@ async function saveProduct(e) {
             distributor: parseFloat(document.getElementById('p-price-distributor').value) || 0,
             retailer:    parseFloat(document.getElementById('p-price-retailer').value) || 0,
             customer:    parseFloat(document.getElementById('p-price-customer').value) || 0,
-        },
-        initial_stock: parseInt(document.getElementById('p-stock').value) || 0,
+        }
     };
+    
+    const stockInput = document.getElementById('p-stock').value;
+    if (stockInput !== '') {
+        payload.initial_stock = parseInt(stockInput) || 0;
+    }
 
     try {
         if (pid) {
