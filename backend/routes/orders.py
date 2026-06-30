@@ -10,13 +10,29 @@ def current_user():
 # ── Order routing: find who the buyer should buy from ──────────────────────────
 def resolve_seller(buyer: User):
     """
-    Hierarchy:
-      customer    → their parent retailer
-      retailer    → their parent distributor
-      distributor → admin (first admin found)
+    Hierarchy for customer:
+      1. Retailer in same pincode
+      2. Distributor in same pincode
+      3. Original parent (usually admin)
+      4. Admin fallback
     """
     if buyer.role == 'customer':
-        return User.query.get(buyer.parent_id)
+        if buyer.pincode:
+            retailer = User.query.filter_by(role='retailer', pincode=buyer.pincode, is_active=True).first()
+            if retailer:
+                return retailer
+            
+            distributor = User.query.filter_by(role='distributor', pincode=buyer.pincode, is_active=True).first()
+            if distributor:
+                return distributor
+                
+        if buyer.parent_id:
+            parent = User.query.get(buyer.parent_id)
+            if parent:
+                return parent
+                
+        return User.query.filter_by(role='admin').first()
+
     elif buyer.role == 'retailer':
         return User.query.get(buyer.parent_id)
     elif buyer.role == 'distributor':
