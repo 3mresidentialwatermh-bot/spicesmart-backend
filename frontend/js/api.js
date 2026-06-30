@@ -178,3 +178,12 @@ window.removeToken = removeToken;
         // Ignore errors if settings not configured yet
     }
 })();
+
+// Inject ambient background
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.querySelector('.ambient-background')) {
+        const bg = document.createElement('div');
+        bg.className = 'ambient-background';
+        document.body.prepend(bg);
+    }
+});

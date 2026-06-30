@@ -12,13 +12,13 @@
   --turmeric:      #E8A430;
   --brand-glow:    rgba(245, 166, 35, 0.4);
 
-  /* Deep Dark Backgrounds */
-  --bg-900: #050505;
-  --bg-800: #0a0a0a;
-  --bg-700: #121212;
-  --bg-600: #1a1a1a;
-  --bg-500: #262626;
-  --bg-400: #333333;
+  /* Deep Dark Backgrounds (Rich & Warm) */
+  --bg-900: #080604;
+  --bg-800: #0f0b08;
+  --bg-700: #17110c;
+  --bg-600: #201711;
+  --bg-500: #2a2018;
+  --bg-400: #362920;
 
   /* Text */
   --text-primary:   #F5F5F5;
@@ -32,10 +32,10 @@
   --info:    #3b82f6;
 
   /* Premium Glass */
-  --glass-bg:     rgba(255, 255, 255, 0.03);
-  --glass-bg-hover: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur:   blur(16px);
+  --glass-bg:     rgba(18, 14, 10, 0.55);
+  --glass-bg-hover: rgba(28, 20, 15, 0.65);
+  --glass-border: rgba(245, 166, 35, 0.12);
+  --glass-blur:   blur(24px);
 
   /* Gradients */
   --grad-brand: linear-gradient(135deg, #F5A623 0%, #E8A430 50%, #C47F0D 100%);
@@ -90,9 +90,46 @@ img { max-width: 100%; }
    TYPOGRAPHY
 ═══════════════════════════════════════════════════════ */
 h1, h2, h3 { font-family: 'Playfair Display', serif; }
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.15; }
-h2 { font-size: clamp(1.4rem, 3vw, 2.2rem); }
-h3 { font-size: 1.25rem; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.4rem); letter-spacing: -0.01em; }
+h3 { font-size: 1.35rem; }
+
+/* ═══════════════════════════════════════════════════════
+   AMBIENT BACKGROUND
+═══════════════════════════════════════════════════════ */
+.ambient-background {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -1;
+  background: var(--bg-900);
+  overflow: hidden;
+  pointer-events: none;
+}
+.ambient-background::before, .ambient-background::after {
+  content: '';
+  position: absolute;
+  width: 60vw; height: 60vw;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ambient-background::before {
+  top: -10vw; left: -10vw;
+  background: var(--saffron);
+}
+.ambient-background::after {
+  bottom: -20vw; right: -10vw;
+  background: var(--spice-red);
+  animation-duration: 25s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes float {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(5%, 10%) scale(1.1); }
+  100% { transform: translate(-5%, 5%) scale(0.9); }
+}
 
 /* ═══════════════════════════════════════════════════════
    BUTTONS
@@ -159,14 +196,15 @@ h3 { font-size: 1.25rem; }
   border: 1px solid var(--glass-border);
   border-radius: var(--r-lg);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   padding: 24px;
   box-shadow: var(--shadow-md);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
 }
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
-  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+  border-color: rgba(245, 166, 35, 0.3);
 }
 
 .card-dark {
