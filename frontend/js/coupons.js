@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initApp();
+    if (typeof initAdminBase === 'function') initAdminBase('coupons');
     loadCoupons();
 });
 
