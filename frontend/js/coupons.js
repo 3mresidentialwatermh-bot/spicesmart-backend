@@ -6,11 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadCoupons() {
     const container = document.getElementById('coupons-table-body');
     try {
-        const res = await apiRequest('GET', '/coupons/');
-        const data = await res.json();
-        
-        if (!res.ok) throw new Error(data.error || 'Failed to load');
-        
+        const data = await apiRequest('GET', '/coupons/');
         renderCoupons(data.coupons);
     } catch (e) {
         container.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
@@ -73,11 +69,7 @@ document.getElementById('coupon-form').addEventListener('submit', async (e) => {
     };
     
     try {
-        const res = await apiRequest('POST', '/coupons/', payload);
-        const data = await res.json();
-        
-        if (!res.ok) throw new Error(data.error || 'Failed to create coupon');
-        
+        await apiRequest('POST', '/coupons/', payload);
         closeCouponModal();
         loadCoupons();
     } catch (e) {
@@ -92,10 +84,7 @@ async function deleteCoupon(id) {
     if (!confirm('Are you sure you want to delete this coupon?')) return;
     
     try {
-        const res = await apiRequest('DELETE', `/coupons/${id}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to delete');
-        
+        await apiRequest('DELETE', `/coupons/${id}`);
         loadCoupons();
     } catch (e) {
         alert(e.message);

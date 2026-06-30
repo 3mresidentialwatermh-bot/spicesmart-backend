@@ -193,10 +193,7 @@ async function applyPromo() {
     }
     
     try {
-        const res = await apiRequest('POST', '/coupons/validate', { code }, true);
-        const data = await res.json();
-        
-        if (!res.ok) throw new Error(data.error || 'Invalid code');
+        const data = await apiRequest('POST', '/coupons/validate', { code }, true);
         
         activeCoupon = { code: data.code, discount_percent: data.discount_percent };
         msg.innerHTML = `<span style="color:#2e7d32">Applied: ${data.discount_percent}% off!</span>`;
