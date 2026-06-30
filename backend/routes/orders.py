@@ -208,73 +208,82 @@ def generate_invoice(oid):
     if u.role != 'admin' and order.buyer_id != u.id and order.seller_id != u.id:
         return jsonify({'error': 'Access denied'}), 403
 
-    from fpdf import FPDF
-    from flask import Response
-    
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font('helvetica', 'B', 16)
-    pdf.cell(0, 10, 'INVOICE', align='C', new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(10)
-    
-    pdf.set_font('helvetica', '', 12)
-    pdf.cell(100, 10, f'Order ID: #{order.id}')
-    pdf.cell(0, 10, f'Date: {order.created_at.strftime("%Y-%m-%d")}', new_x="LMARGIN", new_y="NEXT")
-    pdf.cell(100, 10, f'Status: {order.status.upper()}')
-    pdf.cell(0, 10, f'Payment: {order.payment_status.upper()}', new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(5)
-    
-    pdf.set_font('helvetica', 'B', 12)
-    pdf.cell(0, 10, 'Billed To:', new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font('helvetica', '', 12)
-    pdf.cell(0, 10, f'Name: {order.buyer.name}', new_x="LMARGIN", new_y="NEXT")
-    pdf.cell(0, 10, f'Email: {order.buyer.email}', new_x="LMARGIN", new_y="NEXT")
-    if order.buyer.address:
-        pdf.cell(0, 10, f'Address: {order.buyer.address}', new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(10)
-    
-    # Table Header
-    pdf.set_font('helvetica', 'B', 12)
-    pdf.cell(80, 10, 'Item', border=1)
-    pdf.cell(30, 10, 'Qty', border=1, align='C')
-    pdf.cell(40, 10, 'Price', border=1, align='R')
-    pdf.cell(40, 10, 'Subtotal', border=1, align='R', new_x="LMARGIN", new_y="NEXT")
-    
-    # Table Rows
-    pdf.set_font('helvetica', '', 12)
-    subtotal = 0
-    for item in order.items:
-        st = float(item.unit_price) * item.quantity
-        subtotal += st
-        prod_name = item.product.name[:30] + '...' if len(item.product.name) > 30 else item.product.name
-        pdf.cell(80, 10, prod_name, border=1)
-        pdf.cell(30, 10, str(item.quantity), border=1, align='C')
-        pdf.cell(40, 10, f'Rs. {float(item.unit_price):.2f}', border=1, align='R')
-        pdf.cell(40, 10, f'Rs. {st:.2f}', border=1, align='R', new_x="LMARGIN", new_y="NEXT")
-    
-    pdf.ln(5)
-    pdf.set_font('helvetica', 'B', 12)
-    pdf.cell(150, 10, 'Subtotal:', align='R')
-    pdf.cell(40, 10, f'Rs. {subtotal:.2f}', align='R', new_x="LMARGIN", new_y="NEXT")
-    
-    if order.discount_amount and order.discount_amount > 0:
-        pdf.set_text_color(0, 150, 0)
-        pdf.cell(150, 10, f'Discount ({order.coupon_code}):', align='R')
-        pdf.cell(40, 10, f'- Rs. {float(order.discount_amount):.2f}', align='R', new_x="LMARGIN", new_y="NEXT")
-        pdf.set_text_color(0, 0, 0)
-    
-    pdf.cell(150, 10, 'Total Amount:', align='R')
-    pdf.cell(40, 10, f'Rs. {float(order.total_amount):.2f}', align='R', new_x="LMARGIN", new_y="NEXT")
-    
-    if order.tracking_number:
+    try:
+        from fpdf import FPDF
+        from flask import Response
+        
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font('helvetica', 'B', 16)
+        pdf.cell(0, 10, 'INVOICE', align='C', new_x="LMARGIN", new_y="NEXT")
         pdf.ln(10)
-        pdf.set_font('helvetica', 'I', 11)
-        pdf.cell(0, 10, f'Shipping via {order.courier or "Courier"}: {order.tracking_number}', new_x="LMARGIN", new_y="NEXT")
-    
-    pdf_content = pdf.output(dest='S')
-    
-    return Response(
-        pdf_content,
-        mimetype="application/pdf",
-        headers={"Content-Disposition": f"attachment;filename=Invoice_{order.id}.pdf"}
-    )
+        
+        pdf.set_font('helvetica', '', 12)
+        pdf.cell(100, 10, f'Order ID: #{order.id}')
+        pdf.cell(0, 10, f'Date: {order.created_at.strftime("%Y-%m-%d")}', new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(100, 10, f'Status: {order.status.upper()}')
+        pdf.cell(0, 10, f'Payment: {order.payment_status.upper()}', new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(5)
+        
+        pdf.set_font('helvetica', 'B', 12)
+        pdf.cell(0, 10, 'Billed To:', new_x="LMARGIN", new_y="NEXT")
+        pdf.set_font('helvetica', '', 12)
+        
+        buyer_name = order.buyer.name if order.buyer else 'Unknown'
+        buyer_email = order.buyer.email if order.buyer else 'Unknown'
+        pdf.cell(0, 10, f'Name: {buyer_name}', new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 10, f'Email: {buyer_email}', new_x="LMARGIN", new_y="NEXT")
+        if order.buyer and order.buyer.address:
+            pdf.cell(0, 10, f'Address: {order.buyer.address}', new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(10)
+        
+        # Table Header
+        pdf.set_font('helvetica', 'B', 12)
+        pdf.cell(80, 10, 'Item', border=1)
+        pdf.cell(30, 10, 'Qty', border=1, align='C')
+        pdf.cell(40, 10, 'Price', border=1, align='R')
+        pdf.cell(40, 10, 'Subtotal', border=1, align='R', new_x="LMARGIN", new_y="NEXT")
+        
+        # Table Rows
+        pdf.set_font('helvetica', '', 12)
+        subtotal = 0
+        for item in order.items:
+            st = float(item.unit_price) * item.quantity
+            subtotal += st
+            pname = item.product.name if item.product else 'Unknown'
+            prod_name = pname[:30] + '...' if len(pname) > 30 else pname
+            pdf.cell(80, 10, prod_name, border=1)
+            pdf.cell(30, 10, str(item.quantity), border=1, align='C')
+            pdf.cell(40, 10, f'Rs. {float(item.unit_price):.2f}', border=1, align='R')
+            pdf.cell(40, 10, f'Rs. {st:.2f}', border=1, align='R', new_x="LMARGIN", new_y="NEXT")
+        
+        pdf.ln(5)
+        pdf.set_font('helvetica', 'B', 12)
+        pdf.cell(150, 10, 'Subtotal:', align='R')
+        pdf.cell(40, 10, f'Rs. {subtotal:.2f}', align='R', new_x="LMARGIN", new_y="NEXT")
+        
+        if order.discount_amount and float(order.discount_amount) > 0:
+            pdf.set_text_color(0, 150, 0)
+            pdf.cell(150, 10, f'Discount ({order.coupon_code}):', align='R')
+            pdf.cell(40, 10, f'- Rs. {float(order.discount_amount):.2f}', align='R', new_x="LMARGIN", new_y="NEXT")
+            pdf.set_text_color(0, 0, 0)
+        
+        pdf.cell(150, 10, 'Total Amount:', align='R')
+        pdf.cell(40, 10, f'Rs. {float(order.total_amount):.2f}', align='R', new_x="LMARGIN", new_y="NEXT")
+        
+        if order.tracking_number:
+            pdf.ln(10)
+            pdf.set_font('helvetica', 'I', 11)
+            pdf.cell(0, 10, f'Shipping via {order.courier or "Courier"}: {order.tracking_number}', new_x="LMARGIN", new_y="NEXT")
+        
+        pdf_content = pdf.output(dest='S')
+        
+        return Response(
+            pdf_content,
+            mimetype="application/pdf",
+            headers={"Content-Disposition": f"attachment;filename=Invoice_{order.id}.pdf"}
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Failed to generate PDF: {str(e)}'}), 500

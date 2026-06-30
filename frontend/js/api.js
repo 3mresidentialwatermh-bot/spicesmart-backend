@@ -163,7 +163,7 @@ window.removeToken = removeToken;
             });
         }
         if (s.brand_logo_url) {
-            const logoHtml = `<img src="http://localhost:8080${s.brand_logo_url}" style="width:100%;height:100%;object-fit:contain"/>`;
+            const logoHtml = `<img src="${s.brand_logo_url}" style="width:100%;height:100%;object-fit:contain"/>`;
             document.querySelectorAll('#sidebar-logo-icon, .logo-icon').forEach(el => {
                 el.innerHTML = logoHtml;
                 el.style.background = 'transparent';

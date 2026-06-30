@@ -217,8 +217,19 @@ async function downloadInvoice(orderId) {
         });
         
         if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Failed to download invoice');
+            const errText = await res.text();
+            let errMsg = 'Failed to download invoice';
+            try {
+                const errJson = JSON.parse(errText);
+                errMsg = errJson.error || errMsg;
+            } catch (e) {
+                if (errText.includes('502 Bad Gateway')) {
+                    errMsg = 'Server is currently restarting. Please try again in a minute.';
+                } else {
+                    errMsg = `Server error (${res.status})`;
+                }
+            }
+            throw new Error(errMsg);
         }
         
         const blob = await res.blob();

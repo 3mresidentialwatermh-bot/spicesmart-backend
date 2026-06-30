@@ -11,7 +11,7 @@ async function loadSettings() {
         document.getElementById('set-rzp-id').value = settings.razorpay_key_id || '';
         
         if (settings.brand_logo_url) {
-            document.getElementById('settings-logo-preview').innerHTML = `<img src="http://localhost:8080${settings.brand_logo_url}" style="width:100%;height:100%;object-fit:contain"/>`;
+            document.getElementById('settings-logo-preview').innerHTML = `<img src="${settings.brand_logo_url}" style="width:100%;height:100%;object-fit:contain"/>`;
         }
     } catch (err) {
         showToast('Failed to load settings', 'error');
@@ -29,7 +29,7 @@ async function handleLogoUpload(input) {
 
     try {
         const result = await api.uploadSettingsLogo(file);
-        preview.innerHTML = `<img src="http://localhost:8080${result.url}" style="width:100%;height:100%;object-fit:contain"/>`;
+        preview.innerHTML = `<img src="${result.url}" style="width:100%;height:100%;object-fit:contain"/>`;
         statusEl.textContent = 'Logo uploaded! Remember to save settings.';
         statusEl.style.color = 'var(--success)';
         
@@ -61,7 +61,7 @@ async function saveSettings() {
         showToast('Settings saved successfully', 'success');
         
         // Update local UI
-        const currentLogo = document.getElementById('settings-logo-preview').querySelector('img')?.src?.replace('http://localhost:8080', '');
+        const currentLogo = document.getElementById('settings-logo-preview').querySelector('img')?.getAttribute('src');
         updateBrandingUI(payload.brand_name, currentLogo);
         
         // Clear secret field for security
@@ -87,7 +87,7 @@ function updateBrandingUI(name, logoUrl) {
     if (logoUrl) {
         const iconEls = document.querySelectorAll('#sidebar-logo-icon, .logo-icon');
         iconEls.forEach(el => {
-            el.innerHTML = `<img src="http://localhost:8080${logoUrl}" style="width:100%;height:100%;object-fit:contain"/>`;
+            el.innerHTML = `<img src="${logoUrl}" style="width:100%;height:100%;object-fit:contain"/>`;
             el.style.background = 'transparent';
         });
     }

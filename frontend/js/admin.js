@@ -103,7 +103,7 @@ function openProductModal(productId = null) {
         if (imgUrl && preview) {
             imgUrl.value = p.image_url || '';
             if (p.image_url) {
-                preview.innerHTML = `<img src="http://localhost:8080${p.image_url}" style="width:100%;height:100%;object-fit:cover"/>`;
+                preview.innerHTML = `<img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover"/>`;
             } else {
                 preview.innerHTML = productEmoji(p.category);
             }
@@ -134,7 +134,7 @@ async function handleImageUpload(input) {
     try {
         const result = await api.uploadProductImage(file);
         document.getElementById('p-image-url').value = result.url;
-        preview.innerHTML = `<img src="http://localhost:8080${result.url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='🌶️'"/>`;
+        preview.innerHTML = `<img src="${result.url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='🌶️'"/>`;
         statusEl.textContent = 'Image uploaded!';
         statusEl.style.color = 'var(--success)';
     } catch (err) {
