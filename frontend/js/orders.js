@@ -81,7 +81,7 @@ function renderOrdersTable() {
                 <td class="td-muted">${formatDate(o.created_at)}</td>
                 <td style="display:flex;gap:6px">
                   <button class="btn btn-ghost btn-sm" onclick="viewOrder(${o.id})">👁 View</button>
-                  <button class="btn btn-outline btn-sm" onclick="window.open('${API_BASE}/orders/${o.id}/invoice?token=' + getToken(), '_blank')">📄 Invoice</button>
+                  <button class="btn btn-outline btn-sm" onclick="downloadInvoice(${o.id})">📄 Invoice</button>
                   ${canUpdateStatus(o) && o.status !== 'delivered' && o.status !== 'cancelled'
                     ? `<button class="btn btn-outline btn-sm" onclick="openStatusUpdate(${o.id},'${o.status}')">✏️</button>`
                     : ''}
@@ -207,6 +207,33 @@ async function saveStatus(orderId) {
 
 function closeOrderModal() {
     document.getElementById('order-detail-modal').classList.remove('open');
+}
+
+async function downloadInvoice(orderId) {
+    try {
+        showToast('Generating invoice...', 'info');
+        const res = await fetch(`${API_BASE}/orders/${orderId}/invoice`, {
+            headers: { 'Authorization': 'Bearer ' + getToken() }
+        });
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Failed to download invoice');
+        }
+        
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `Invoice_${orderId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        showToast('Invoice downloaded successfully', 'success');
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
 }
 
 initOrders();
