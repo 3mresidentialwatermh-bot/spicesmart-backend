@@ -262,8 +262,20 @@ async function submitStatusUpdate() {
     const orderId = document.getElementById('status-order-id').value;
     const newStatus = document.getElementById('new-status-select').value;
     
+    let payload = { status: newStatus };
+    
+    if (newStatus === 'shipped') {
+        const tracking = prompt("Enter tracking number (optional):");
+        if (tracking !== null) {
+            payload.tracking_number = tracking;
+            payload.courier = prompt("Enter courier name (optional):") || "";
+        } else {
+            return; // Cancelled
+        }
+    }
+
     try {
-        const res = await apiCall(`/orders/${orderId}/status`, 'PUT', { status: newStatus });
+        const res = await apiRequest('PUT', `/orders/${orderId}/status`, payload);
         showToast('Order status updated successfully', 'success');
         closeStatusModal();
         fetchOrders(); // Refresh table
