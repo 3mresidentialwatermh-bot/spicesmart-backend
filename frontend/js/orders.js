@@ -278,7 +278,7 @@ async function submitStatusUpdate() {
         const res = await apiRequest('PUT', `/orders/${orderId}/status`, payload);
         showToast('Order status updated successfully', 'success');
         closeStatusModal();
-        fetchOrders(); // Refresh table
+        loadOrders(); // Refresh table
     } catch (err) {
         showToast(err.message, 'error');
     }
