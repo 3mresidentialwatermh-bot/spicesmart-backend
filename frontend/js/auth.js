@@ -186,7 +186,31 @@ function buildSidebar(role, activePage) {
             <span>${l.label}</span>
         </a>`;
     }).join('');
+
+    // Add Dark Mode Toggle
+    nav.innerHTML += `<div class="nav-section-title">Theme</div>
+        <a href="#" class="nav-item" onclick="toggleTheme(); return false;">
+            <span class="nav-icon">🌙</span>
+            <span>Toggle Dark Mode</span>
+        </a>`;
 }
+
+/* ─── Theme Toggle ───────────────────────────────────────────── */
+function initTheme() {
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+}
+function toggleTheme() {
+    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+initTheme();
 
 window.showToast = showToast;
 window.requireAuth = requireAuth;
@@ -201,4 +225,5 @@ window.productEmoji = productEmoji;
 window.initSidebarToggle = initSidebarToggle;
 window.setActiveNav = setActiveNav;
 window.buildSidebar = buildSidebar;
+window.toggleTheme = toggleTheme;
 window.NAV_LINKS = NAV_LINKS;

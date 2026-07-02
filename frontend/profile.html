@@ -201,6 +201,12 @@
         </div>
       </div>
 
+      <!-- Recent Orders -->
+      <div class="profile-section" style="margin-top:20px;">
+        <div class="profile-section-title">📦 Recent Orders</div>
+        <div id="recent-orders-list">Loading orders...</div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -236,6 +242,39 @@ async function initProfile() {
     // Show welcome banner for new registrations
     if (new URLSearchParams(location.search).get('new') === '1') {
         document.getElementById('new-user-banner').style.display = 'block';
+    }
+
+    // Load recent orders
+    loadRecentOrders();
+}
+
+async function loadRecentOrders() {
+    try {
+        const data = await api.getOrders();
+        const orders = data.orders || [];
+        const container = document.getElementById('recent-orders-list');
+        
+        if (orders.length === 0) {
+            container.innerHTML = '<div class="text-muted">You have no recent orders.</div>';
+            return;
+        }
+
+        // Show top 3 recent orders
+        const recent = orders.slice(0, 3);
+        container.innerHTML = recent.map(o => `
+            <div class="info-row" style="justify-content:space-between;padding:12px 0;">
+                <div>
+                    <div style="font-weight:600;">Order #${o.id}</div>
+                    <div class="text-muted text-sm">${formatDate(o.created_at)}</div>
+                </div>
+                <div>
+                    <div style="font-weight:600;color:var(--saffron);">${formatCurrency(o.total_amount)}</div>
+                    <div>${statusBadge(o.status)}</div>
+                </div>
+            </div>
+        `).join('');
+    } catch(e) {
+        document.getElementById('recent-orders-list').innerHTML = '<div class="text-danger">Failed to load orders.</div>';
     }
 }
 

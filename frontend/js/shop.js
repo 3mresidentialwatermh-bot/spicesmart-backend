@@ -1,7 +1,7 @@
 /* shop.js — product catalog, cart, and checkout */
 
 let allProducts = [];
-let cart = {};   // { productId: { product, qty } }
+let cart = JSON.parse(localStorage.getItem('cart')) || {};   // { productId: { product, qty } }
 let activeCoupon = null; // { code, discount_percent }
 let currentUser = null;
 
@@ -141,6 +141,9 @@ function updateCartUI() {
             }
         }
     });
+
+    // Save to localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
 }
 
 function renderCartItems() {
@@ -236,7 +239,7 @@ async function checkout() {
         if (payInfo.mock) {
             // ── MOCK PAYMENT (no Razorpay keys configured) ─────────────────
             await api.verifyPayment({ mock: true, order_id: order.id, razorpay_order_id: payInfo.razorpay_order_id });
-            cart = {}; activeCoupon = null; updateCartUI(); closeCart();
+            cart = {}; localStorage.removeItem('cart'); activeCoupon = null; updateCartUI(); closeCart();
             showOrderSuccess(order, 'MOCK-PAID');
         } else {
             // ── REAL RAZORPAY CHECKOUT ──────────────────────────────────────
@@ -262,7 +265,7 @@ async function checkout() {
                         order_id: order.id,
                     });
                     if (verified.success) {
-                        cart = {}; activeCoupon = null; updateCartUI(); closeCart();
+                        cart = {}; localStorage.removeItem('cart'); activeCoupon = null; updateCartUI(); closeCart();
                         showOrderSuccess(order, response.razorpay_payment_id);
                     } else {
                         showToast('Payment verification failed', 'error');

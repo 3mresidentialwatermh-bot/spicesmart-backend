@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Order, OrderItem, Product, Inventory, User
+from email_utils import send_order_confirmation
 
 orders_bp = Blueprint('orders', __name__)
 
@@ -132,6 +133,12 @@ def place_order():
         db.session.add(oi)
 
     db.session.commit()
+    
+    try:
+        send_order_confirmation(order)
+    except Exception as e:
+        print(f"Error sending confirmation email: {e}")
+        
     return jsonify({'order': order.to_dict()}), 201
 
 

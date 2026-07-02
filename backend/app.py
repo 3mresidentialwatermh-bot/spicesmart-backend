@@ -1,9 +1,12 @@
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 from config import Config
 from models import db
 import os
+
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
@@ -14,6 +17,7 @@ def create_app():
 
     db.init_app(app)
     JWTManager(app)
+    mail.init_app(app)
     CORS(app, resources={r"/api/*": {"origins": ["https://spicesmart1.vercel.app", "http://localhost:8080"]}}, supports_credentials=True)
 
 
