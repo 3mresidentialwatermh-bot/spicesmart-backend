@@ -309,8 +309,8 @@ def generate_invoice(oid):
         base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         
         logo_path = None
-        if logo_url and logo_url.startswith('/uploads/'):
-            filename = logo_url.replace('/uploads/', '')
+        if logo_url and logo_url.startswith('/static/uploads/'):
+            filename = logo_url.replace('/static/uploads/', '')
             local_logo = os.path.join(base_dir, 'uploads', filename)
             if os.path.exists(local_logo):
                 logo_path = local_logo
