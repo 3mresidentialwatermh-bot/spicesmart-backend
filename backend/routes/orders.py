@@ -297,18 +297,32 @@ def generate_invoice(oid):
     try:
         from fpdf import FPDF
         from flask import Response
-        
+        from models import Settings
+        settings = Settings.query.first()
+        brand_name = settings.brand_name if settings else 'SpicesMart'
+        logo_url = settings.brand_logo_url if settings else None
+
         pdf = FPDF()
         pdf.add_page()
         
         import os
         base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        logo_path = os.path.join(base_dir, '..', 'frontend', 'static', 'icons', 'icon-192x192.png')
+        
+        logo_path = None
+        if logo_url and logo_url.startswith('/uploads/'):
+            filename = logo_url.replace('/uploads/', '')
+            local_logo = os.path.join(base_dir, 'uploads', filename)
+            if os.path.exists(local_logo):
+                logo_path = local_logo
+                
+        if not logo_path:
+            logo_path = os.path.join(base_dir, '..', 'frontend', 'static', 'icons', 'icon-192x192.png')
+            
         if os.path.exists(logo_path):
             pdf.image(logo_path, x=10, y=8, w=20)
 
         pdf.set_font('helvetica', 'B', 16)
-        pdf.cell(0, 10, 'INVOICE', align='C', new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 10, f'{brand_name.upper()} INVOICE', align='C', new_x="LMARGIN", new_y="NEXT")
         pdf.ln(10)
         
         pdf.set_font('helvetica', '', 12)
