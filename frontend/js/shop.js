@@ -15,6 +15,7 @@ async function initShop() {
 
     await loadCategories();
     await loadProducts();
+    await loadAddresses();
 
     // Search
     document.getElementById('search-input').addEventListener('input', (e) => {
@@ -42,6 +43,28 @@ async function loadCategories() {
         div.onclick = () => filterCategory(div, cat);
         pills.appendChild(div);
     });
+}
+
+async function loadAddresses() {
+    try {
+        const res = await apiRequest('GET', '/auth/addresses');
+        const select = document.getElementById('checkout-address-select');
+        const addresses = res.addresses || [];
+        
+        let html = '<option value="">Default Profile Address</option>';
+        addresses.forEach(a => {
+            html += `<option value="${a.id}">${a.title || 'Address'} - ${a.city}, ${a.state} ${a.is_default ? '(Default)' : ''}</option>`;
+        });
+        select.innerHTML = html;
+        
+        // Auto-select default
+        const defaultAddr = addresses.find(a => a.is_default);
+        if (defaultAddr) {
+            select.value = defaultAddr.id;
+        }
+    } catch (e) {
+        console.error("Failed to load addresses", e);
+    }
 }
 
 async function loadProducts(params = {}) {
@@ -226,6 +249,11 @@ async function checkout() {
     const payload = { items };
     if (activeCoupon) {
         payload.coupon_code = activeCoupon.code;
+    }
+    
+    const addressId = document.getElementById('checkout-address-select').value;
+    if (addressId) {
+        payload.address_id = parseInt(addressId);
     }
 
     try {

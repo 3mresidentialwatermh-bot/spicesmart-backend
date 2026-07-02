@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, User
+from models import db, User, Address
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -102,3 +102,76 @@ def update_profile():
     db.session.commit()
     return jsonify({'user': user.to_dict(), 'message': 'Profile updated successfully'})
 
+
+@auth_bp.route('/addresses', methods=['GET'])
+@jwt_required()
+def get_addresses():
+    user = current_user()
+    return jsonify({'addresses': [a.to_dict() for a in user.addresses]})
+
+@auth_bp.route('/addresses', methods=['POST'])
+@jwt_required()
+def add_address():
+    user = current_user()
+    data = request.get_json()
+    
+    # If this is the first address or marked as default, unset others
+    is_default = data.get('is_default', False)
+    if is_default or not user.addresses:
+        is_default = True
+        for a in user.addresses:
+            a.is_default = False
+            
+    addr = Address(
+        user_id=user.id,
+        title=data.get('title', 'Address'),
+        address=data.get('address', ''),
+        city=data.get('city', ''),
+        state=data.get('state', ''),
+        pincode=data.get('pincode', ''),
+        is_default=is_default
+    )
+    db.session.add(addr)
+    db.session.commit()
+    return jsonify({'message': 'Address added successfully', 'address': addr.to_dict()}), 201
+
+@auth_bp.route('/addresses/<int:address_id>', methods=['PUT'])
+@jwt_required()
+def update_address(address_id):
+    user = current_user()
+    addr = Address.query.filter_by(id=address_id, user_id=user.id).first()
+    if not addr:
+        return jsonify({'error': 'Address not found'}), 404
+        
+    data = request.get_json()
+    
+    if 'is_default' in data and data['is_default']:
+        for a in user.addresses:
+            a.is_default = False
+        addr.is_default = True
+
+    for field in ('title', 'address', 'city', 'state', 'pincode'):
+        if field in data:
+            setattr(addr, field, data[field])
+            
+    db.session.commit()
+    return jsonify({'message': 'Address updated successfully', 'address': addr.to_dict()})
+
+@auth_bp.route('/addresses/<int:address_id>', methods=['DELETE'])
+@jwt_required()
+def delete_address(address_id):
+    user = current_user()
+    addr = Address.query.filter_by(id=address_id, user_id=user.id).first()
+    if not addr:
+        return jsonify({'error': 'Address not found'}), 404
+        
+    was_default = addr.is_default
+    db.session.delete(addr)
+    db.session.commit()
+    
+    # If we deleted the default, make the first remaining address the default
+    if was_default and user.addresses:
+        user.addresses[0].is_default = True
+        db.session.commit()
+        
+    return jsonify({'message': 'Address deleted successfully'})

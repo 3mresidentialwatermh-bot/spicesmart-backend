@@ -67,6 +67,30 @@
   </div>
 </div>
 
+<!-- STATUS UPDATE MODAL -->
+<div class="modal-overlay" id="status-update-modal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <span class="modal-title">Update Order Status</span>
+      <button class="modal-close" onclick="closeStatusModal()">✕</button>
+    </div>
+    <div style="padding:20px">
+      <div class="form-group">
+        <label>New Status</label>
+        <select id="new-status-select" class="form-control">
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <input type="hidden" id="status-order-id">
+      <button class="btn btn-primary btn-full mt-2" onclick="submitStatusUpdate()">Update Status</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 <script src="/js/api.js"></script>
 <script src="/js/auth.js"></script>

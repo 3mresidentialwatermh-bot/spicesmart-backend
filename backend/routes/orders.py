@@ -114,6 +114,21 @@ def place_order():
             discount_amount = total * float(coupon.discount_percent) / 100.0
             total -= discount_amount
 
+    shipping_address = u.address
+    shipping_city = u.city
+    shipping_state = u.state
+    shipping_pincode = u.pincode
+    
+    address_id = data.get('address_id')
+    if address_id:
+        from models import Address
+        addr = Address.query.filter_by(id=address_id, user_id=u.id).first()
+        if addr:
+            shipping_address = addr.address
+            shipping_city = addr.city
+            shipping_state = addr.state
+            shipping_pincode = addr.pincode
+
     order = Order(
         buyer_id=u.id,
         seller_id=seller.id,
@@ -123,7 +138,11 @@ def place_order():
         notes=data.get('notes'),
         status='confirmed',
         coupon_code=coupon_code if discount_amount > 0 else None,
-        discount_amount=discount_amount
+        discount_amount=discount_amount,
+        shipping_address=shipping_address,
+        shipping_city=shipping_city,
+        shipping_state=shipping_state,
+        shipping_pincode=shipping_pincode
     )
     db.session.add(order)
     db.session.flush()
@@ -237,6 +256,13 @@ def generate_invoice(oid):
         
         pdf = FPDF()
         pdf.add_page()
+        
+        import os
+        base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        logo_path = os.path.join(base_dir, '..', 'frontend', 'static', 'icons', 'icon-192x192.png')
+        if os.path.exists(logo_path):
+            pdf.image(logo_path, x=10, y=8, w=20)
+
         pdf.set_font('helvetica', 'B', 16)
         pdf.cell(0, 10, 'INVOICE', align='C', new_x="LMARGIN", new_y="NEXT")
         pdf.ln(10)
@@ -246,6 +272,9 @@ def generate_invoice(oid):
         pdf.cell(0, 10, f'Date: {order.created_at.strftime("%Y-%m-%d")}', new_x="LMARGIN", new_y="NEXT")
         pdf.cell(100, 10, f'Status: {order.status.upper()}')
         pdf.cell(0, 10, f'Payment: {order.payment_status.upper()}', new_x="LMARGIN", new_y="NEXT")
+        
+        seller_gstin = order.seller.gstin if order.seller and order.seller.gstin else 'N/A'
+        pdf.cell(100, 10, f'Seller GSTIN: {seller_gstin}', new_x="LMARGIN", new_y="NEXT")
         pdf.ln(5)
         
         pdf.set_font('helvetica', 'B', 12)
@@ -254,9 +283,19 @@ def generate_invoice(oid):
         
         buyer_name = order.buyer.name if order.buyer else 'Unknown'
         buyer_email = order.buyer.email if order.buyer else 'Unknown'
+        buyer_gstin = order.buyer.gstin if order.buyer and order.buyer.gstin else 'N/A'
+        
         pdf.cell(0, 10, f'Name: {buyer_name}', new_x="LMARGIN", new_y="NEXT")
         pdf.cell(0, 10, f'Email: {buyer_email}', new_x="LMARGIN", new_y="NEXT")
-        if order.buyer and order.buyer.address:
+        pdf.cell(0, 10, f'Buyer GSTIN: {buyer_gstin}', new_x="LMARGIN", new_y="NEXT")
+        
+        if order.shipping_address:
+            addr = order.shipping_address
+            if order.shipping_city: addr += f", {order.shipping_city}"
+            if order.shipping_state: addr += f", {order.shipping_state}"
+            if order.shipping_pincode: addr += f" - {order.shipping_pincode}"
+            pdf.cell(0, 10, f'Address: {addr}', new_x="LMARGIN", new_y="NEXT")
+        elif order.buyer and order.buyer.address:
             pdf.cell(0, 10, f'Address: {order.buyer.address}', new_x="LMARGIN", new_y="NEXT")
         pdf.ln(10)
         

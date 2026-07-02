@@ -151,43 +151,14 @@
 
         <!-- Right column: Address + Business -->
         <div>
-          <!-- Address -->
+          <!-- Address Book -->
           <div class="profile-section">
-            <div class="profile-section-title">📍 Delivery Address</div>
-            <div class="form-group">
-              <label class="form-label">Street Address / House No.</label>
-              <textarea class="form-textarea" id="f-address" placeholder="House No., Street, Area…" style="height:80px"></textarea>
+            <div class="profile-section-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>📍 Address Book</span>
+              <button class="btn btn-sm btn-primary" onclick="openAddressModal()">+ Add New</button>
             </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label">City *</label>
-                <input class="form-input" id="f-city" placeholder="Mumbai"/>
-              </div>
-              <div class="form-group">
-                <label class="form-label">State *</label>
-                <select class="form-select" id="f-state">
-                  <option value="">Select State</option>
-                  <option>Andhra Pradesh</option><option>Arunachal Pradesh</option>
-                  <option>Assam</option><option>Bihar</option>
-                  <option>Chhattisgarh</option><option>Goa</option>
-                  <option>Gujarat</option><option>Haryana</option>
-                  <option>Himachal Pradesh</option><option>Jharkhand</option>
-                  <option>Karnataka</option><option>Kerala</option>
-                  <option>Madhya Pradesh</option><option>Maharashtra</option>
-                  <option>Manipur</option><option>Meghalaya</option>
-                  <option>Mizoram</option><option>Nagaland</option>
-                  <option>Odisha</option><option>Punjab</option>
-                  <option>Rajasthan</option><option>Sikkim</option>
-                  <option>Tamil Nadu</option><option>Telangana</option>
-                  <option>Tripura</option><option>Uttar Pradesh</option>
-                  <option>Uttarakhand</option><option>West Bengal</option>
-                  <option>Delhi</option><option>Jammu & Kashmir</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">PIN Code</label>
-              <input class="form-input" id="f-pincode" placeholder="400001" maxlength="6"/>
+            <div id="address-list">
+              <div class="text-muted text-sm" style="padding:10px 0;">Loading addresses...</div>
             </div>
           </div>
 
@@ -211,6 +182,63 @@
       </div>
 
     </main>
+  </div>
+</div>
+
+<!-- ADDRESS MODAL -->
+<div class="modal-overlay" id="address-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <span class="modal-title" id="address-modal-title">Add New Address</span>
+      <button class="modal-close" onclick="closeAddressModal()">✕</button>
+    </div>
+    <div style="padding:20px">
+      <input type="hidden" id="f-addr-id">
+      <div class="form-group">
+        <label class="form-label">Title (e.g. Home, Office)</label>
+        <input class="form-input" id="f-addr-title" placeholder="Home">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Street Address / House No.</label>
+        <textarea class="form-textarea" id="f-addr-address" placeholder="House No., Street, Area…" style="height:60px"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">City *</label>
+          <input class="form-input" id="f-addr-city" placeholder="Mumbai"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State *</label>
+          <select class="form-select" id="f-addr-state">
+            <option value="">Select State</option>
+            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option>
+            <option>Assam</option><option>Bihar</option>
+            <option>Chhattisgarh</option><option>Goa</option>
+            <option>Gujarat</option><option>Haryana</option>
+            <option>Himachal Pradesh</option><option>Jharkhand</option>
+            <option>Karnataka</option><option>Kerala</option>
+            <option>Madhya Pradesh</option><option>Maharashtra</option>
+            <option>Manipur</option><option>Meghalaya</option>
+            <option>Mizoram</option><option>Nagaland</option>
+            <option>Odisha</option><option>Punjab</option>
+            <option>Rajasthan</option><option>Sikkim</option>
+            <option>Tamil Nadu</option><option>Telangana</option>
+            <option>Tripura</option><option>Uttar Pradesh</option>
+            <option>Uttarakhand</option><option>West Bengal</option>
+            <option>Delhi</option><option>Jammu & Kashmir</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PIN Code</label>
+        <input class="form-input" id="f-addr-pincode" placeholder="400001" maxlength="6"/>
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="f-addr-default" style="width:16px; height:16px;">
+        <label for="f-addr-default" style="margin:0; font-size:14px; font-weight:500;">Set as Default Address</label>
+      </div>
+      <button class="btn btn-primary btn-full mt-2" onclick="saveAddress()">Save Address</button>
+    </div>
   </div>
 </div>
 
@@ -301,18 +329,8 @@ function populateForm(u) {
     document.getElementById('f-name').value    = u.name || '';
     document.getElementById('f-email').value   = u.email || '';
     document.getElementById('f-phone').value   = u.phone || '';
-    document.getElementById('f-address').value = u.address || '';
-    document.getElementById('f-city').value    = u.city || '';
-    document.getElementById('f-pincode').value = u.pincode || '';
-    document.getElementById('f-gstin').value   = u.gstin || '';
 
-    // State dropdown
-    const stateEl = document.getElementById('f-state');
-    if (u.state) {
-        for (let opt of stateEl.options) {
-            if (opt.text === u.state) { opt.selected = true; break; }
-        }
-    }
+    document.getElementById('f-gstin').value   = u.gstin || '';
 
     // Business section only for non-customers
     document.getElementById('business-section').style.display =
@@ -340,10 +358,6 @@ async function saveProfile() {
     const payload = {
         name:    document.getElementById('f-name').value.trim(),
         phone:   document.getElementById('f-phone').value.trim(),
-        address: document.getElementById('f-address').value.trim(),
-        city:    document.getElementById('f-city').value.trim(),
-        state:   document.getElementById('f-state').value,
-        pincode: document.getElementById('f-pincode').value.trim(),
         gstin:   document.getElementById('f-gstin').value.trim().toUpperCase(),
     };
 

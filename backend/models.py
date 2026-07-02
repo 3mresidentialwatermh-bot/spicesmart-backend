@@ -27,6 +27,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
+    addresses  = db.relationship('Address', backref='user', cascade='all, delete-orphan')    # Relationships
     children   = db.relationship('User', backref=db.backref('parent', remote_side=[id]))
     orders_placed   = db.relationship('Order', foreign_keys='Order.buyer_id',  backref='buyer')
     orders_received = db.relationship('Order', foreign_keys='Order.seller_id', backref='seller')
@@ -105,6 +106,33 @@ class Product(db.Model):
 
 
 # ─────────────────────────────────────────────
+# Addresses
+# ─────────────────────────────────────────────
+class Address(db.Model):
+    __tablename__ = 'addresses'
+    
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title      = db.Column(db.String(50))   # e.g., 'Home', 'Office'
+    address    = db.Column(db.Text)
+    city       = db.Column(db.String(100))
+    state      = db.Column(db.String(100))
+    pincode    = db.Column(db.String(10))
+    is_default = db.Column(db.Boolean, default=False)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'title': self.title,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'pincode': self.pincode,
+            'is_default': self.is_default
+        }
+
+# ─────────────────────────────────────────────
 # Price Tiers
 # ─────────────────────────────────────────────
 class PriceTier(db.Model):
@@ -176,6 +204,11 @@ class Order(db.Model):
     coupon_code     = db.Column(db.String(50))
     discount_amount = db.Column(db.Numeric(12, 2), default=0)
     
+    shipping_address = db.Column(db.Text)
+    shipping_city    = db.Column(db.String(100))
+    shipping_state   = db.Column(db.String(100))
+    shipping_pincode = db.Column(db.String(10))
+    
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at     = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -199,6 +232,10 @@ class Order(db.Model):
             'courier': self.courier,
             'coupon_code': self.coupon_code,
             'discount_amount': float(self.discount_amount) if self.discount_amount else 0,
+            'shipping_address': self.shipping_address,
+            'shipping_city': self.shipping_city,
+            'shipping_state': self.shipping_state,
+            'shipping_pincode': self.shipping_pincode,
             'items': [i.to_dict() for i in self.items],
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),

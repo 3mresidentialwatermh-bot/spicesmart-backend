@@ -247,4 +247,29 @@ async function downloadInvoice(orderId) {
     }
 }
 
+// --- Status Update Modal ---
+function openStatusUpdate(orderId, currentStatus) {
+    document.getElementById('status-order-id').value = orderId;
+    document.getElementById('new-status-select').value = currentStatus;
+    document.getElementById('status-update-modal').classList.add('active');
+}
+
+function closeStatusModal() {
+    document.getElementById('status-update-modal').classList.remove('active');
+}
+
+async function submitStatusUpdate() {
+    const orderId = document.getElementById('status-order-id').value;
+    const newStatus = document.getElementById('new-status-select').value;
+    
+    try {
+        const res = await apiCall(`/orders/${orderId}/status`, 'PUT', { status: newStatus });
+        showToast('Order status updated successfully', 'success');
+        closeStatusModal();
+        fetchOrders(); // Refresh table
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
+}
+
 initOrders();
