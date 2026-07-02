@@ -82,9 +82,6 @@ function renderOrdersTable() {
                 <td style="display:flex;gap:6px">
                   <button class="btn btn-ghost btn-sm" onclick="viewOrder(${o.id})">👁 View</button>
                   <button class="btn btn-outline btn-sm" onclick="downloadInvoice(${o.id})">📄 Invoice</button>
-                  ${canUpdateStatus(o) && o.status !== 'delivered' && o.status !== 'cancelled'
-                    ? `<button class="btn btn-outline btn-sm" onclick="openStatusUpdate(${o.id},'${o.status}')">✏️</button>`
-                    : ''}
                 </td>
               </tr>
             `).join('')}
