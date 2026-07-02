@@ -311,11 +311,13 @@ def generate_invoice(oid):
         logo_path = None
         if logo_url and logo_url.startswith('/static/uploads/'):
             filename = logo_url.replace('/static/uploads/', '')
-            local_logo = os.path.join(base_dir, 'uploads', filename)
+            from flask import current_app
+            local_logo = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             if os.path.exists(local_logo):
                 logo_path = local_logo
                 
         if not logo_path:
+            base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
             logo_path = os.path.join(base_dir, '..', 'frontend', 'static', 'icons', 'icon-192x192.png')
             
         if os.path.exists(logo_path):
