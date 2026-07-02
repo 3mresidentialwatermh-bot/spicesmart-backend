@@ -80,26 +80,64 @@ def place_order():
     coupon_code = data.get('coupon_code', '').strip().upper()
     discount_amount = 0.0
 
+    # 1. First, check if the assigned seller has enough stock for ALL items
+    seller_has_stock = True
     total = 0.0
-    order_items = []
-
     for item in items_data:
         product = Product.query.get(item['product_id'])
         if not product or not product.is_active:
             return jsonify({'error': f'Product {item["product_id"]} not found'}), 404
-
-        qty   = int(item['quantity'])
+        
+        qty = int(item['quantity'])
         price = product.get_price_for_role(u.role)
+        total += price * qty
+        
+        inv = Inventory.query.filter_by(product_id=product.id, owner_id=seller.id).first()
+        if not inv or inv.quantity < qty:
+            seller_has_stock = False
+            break
 
-        # Check seller's stock
-        ok, err = deduct_stock(product.id, seller.id, qty)
-        if not ok:
-            db.session.rollback()
-            return jsonify({'error': err}), 400
+    # 2. Fallback Logic if seller is out of stock
+    if not seller_has_stock:
+        if seller.role != 'admin':
+            admin = User.query.filter_by(role='admin').first()
+            admin_has_stock = True
+            for item in items_data:
+                qty = int(item['quantity'])
+                inv = Inventory.query.filter_by(product_id=item['product_id'], owner_id=admin.id).first()
+                if not inv or inv.quantity < qty:
+                    admin_has_stock = False
+                    break
+            
+            if admin_has_stock:
+                # Log missed sale and ping distributor
+                from models import MissedSale
+                from email_utils import send_inventory_alert
+                
+                ms = MissedSale(user_id=seller.id, amount=total, reason="Insufficient stock for cart")
+                db.session.add(ms)
+                send_inventory_alert(seller, total)
+                
+                # Switch seller to Admin
+                seller = admin
+            else:
+                return jsonify({'error': 'Insufficient stock even at the Admin warehouse.'}), 400
+        else:
+            return jsonify({'error': 'Insufficient stock.'}), 400
 
-        # Add stock to buyer
+    # 3. Deduct stock and create order items
+    order_items = []
+    total = 0.0 # Recalculate just to be safe
+    for item in items_data:
+        product = Product.query.get(item['product_id'])
+        qty = int(item['quantity'])
+        price = product.get_price_for_role(u.role)
+        
+        # Deduct from final seller
+        deduct_stock(product.id, seller.id, qty)
+        # Add to buyer
         add_stock(product.id, u.id, qty)
-
+        
         total += price * qty
         order_items.append(OrderItem(
             product_id=product.id,

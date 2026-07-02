@@ -36,3 +36,14 @@ def send_order_confirmation(order):
         recipients=[buyer_email],
         text_body=body
     )
+
+def send_inventory_alert(distributor, missed_amount):
+    subject = f"Lost Business Opportunity Alert - SpicesMart"
+    body = f"Hello {distributor.name},\n\nYou just missed a potential sale worth ₹{missed_amount} because you were out of stock!\n\nPlease log in to SpicesMart and order more inventory from the Admin warehouse to prevent losing more sales.\n\nBest,\nSpicesMart Team"
+    
+    send_email(
+        subject=subject,
+        sender=current_app.config.get('MAIL_DEFAULT_SENDER', 'noreply@spicesmart.com'),
+        recipients=[distributor.email],
+        text_body=body
+    )

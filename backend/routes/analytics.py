@@ -60,10 +60,17 @@ def get_dashboard_analytics():
 
     sales_by_role_data = {role: float(rev) for role, rev in sales_by_role if rev}
 
+    # 5. Missed Sales (Lost Opportunities)
+    from models import MissedSale
+    missed_sales_total = db.session.query(
+        func.sum(MissedSale.amount)
+    ).filter(MissedSale.user_id == u.id).scalar() or 0
+
     return jsonify({
         'total_orders': totals.total_orders or 0,
         'total_revenue': float(totals.total_revenue or 0),
         'revenue_by_date': revenue_by_date,
         'top_products': top_products_data,
-        'sales_by_role': sales_by_role_data
+        'sales_by_role': sales_by_role_data,
+        'missed_sales': float(missed_sales_total)
     })

@@ -39,6 +39,13 @@ function renderAnalyticsStats(data) {
             <div class="stat-label">Total Revenue</div>
           </div>
         </div>
+        <div class="stat-card" style="flex:1">
+          <div class="stat-icon" style="color: #f56565;">!</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color: #f56565;">${formatCurrency(data.missed_sales || 0)}</div>
+            <div class="stat-label">Missed Opportunities</div>
+          </div>
+        </div>
     `;
 }
 

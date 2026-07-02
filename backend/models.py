@@ -304,3 +304,26 @@ class Coupon(db.Model):
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat()
         }
+
+# ---------------------------------------------
+# Missed Sales (Lost Opportunities)
+# ---------------------------------------------
+class MissedSale(db.Model):
+    __tablename__ = 'missed_sales'
+    
+    id         = db.Column(db.Integer, primary_key=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) # The distributor who lost it
+    amount     = db.Column(db.Numeric(12, 2), default=0)
+    reason     = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user       = db.relationship('User', backref=db.backref('missed_sales', lazy=True))
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'amount': float(self.amount),
+            'reason': self.reason,
+            'created_at': self.created_at.isoformat()
+        }
