@@ -73,7 +73,11 @@ def upload_logo():
     if file and allowed_file(file.filename):
         ext = file.filename.rsplit('.', 1)[1].lower()
         filename = f"brand_logo.{ext}"
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        upload_dir = current_app.config['UPLOAD_FOLDER']
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir, exist_ok=True)
+            
+        filepath = os.path.join(upload_dir, filename)
         file.save(filepath)
 
         url = f"/static/uploads/{filename}"

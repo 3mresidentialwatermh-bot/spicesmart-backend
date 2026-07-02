@@ -171,7 +171,12 @@ def upload_image():
 
     ext      = file.filename.rsplit('.', 1)[1].lower()
     filename = f"{uuid.uuid4().hex}.{ext}"
-    save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+    
+    upload_dir = current_app.config['UPLOAD_FOLDER']
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir, exist_ok=True)
+        
+    save_path = os.path.join(upload_dir, filename)
     file.save(save_path)
 
     url = f"/static/uploads/{filename}"
@@ -199,10 +204,16 @@ def bulk_upload_images():
             
             product = Product.query.filter_by(sku=sku).first()
             if product:
-                safe_filename = secure_filename(f"{sku}.{ext}")
-                filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], safe_filename)
-                file.save(filepath)
-                product.image_url = f"/static/uploads/{safe_filename}"
+                filename = f"{sku}_{uuid.uuid4().hex[:6]}.{ext}"
+                
+                upload_dir = current_app.config['UPLOAD_FOLDER']
+                if not os.path.exists(upload_dir):
+                    os.makedirs(upload_dir, exist_ok=True)
+                    
+                save_path = os.path.join(upload_dir, filename)
+                file.save(save_path)
+                
+                product.image_url = f"/static/uploads/{filename}"
                 matched += 1
             else:
                 errors.append(f"No product found for SKU: {sku} (from {file.filename})")
