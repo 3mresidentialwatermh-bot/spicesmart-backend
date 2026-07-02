@@ -14,6 +14,7 @@ async function initAnalytics() {
     try {
         const data = await api.getAnalyticsData();
         renderAnalyticsStats(data);
+        renderMissedSalesTable(data);
         initCharts(data);
     } catch (err) {
         console.error("Failed to load analytics:", err);
@@ -42,11 +43,49 @@ function renderAnalyticsStats(data) {
         <div class="stat-card" style="flex:1">
           <div class="stat-icon" style="color: #f56565;">!</div>
           <div class="stat-info">
-            <div class="stat-value" style="color: #f56565;">${formatCurrency(data.missed_sales || 0)}</div>
+            <div class="stat-value" style="color: #f56565;">${formatCurrency(data.missed_sales_total || 0)}</div>
             <div class="stat-label">Missed Opportunities</div>
           </div>
         </div>
     `;
+}
+
+function renderMissedSalesTable(data) {
+    if (!data.missed_sales_list || data.missed_sales_list.length === 0) return;
+    
+    // Create the table container if it doesn't exist
+    let container = document.getElementById('missed-sales-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'missed-sales-container';
+        container.className = 'card mt-4';
+        container.innerHTML = `
+            <h3>Recent Missed Opportunities</h3>
+            <p style="color:#a0aec0; font-size:14px;">Products you couldn't sell because they were out of stock.</p>
+            <div class="table-responsive mt-3">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Products</th>
+                            <th>Lost Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="missed-sales-tbody"></tbody>
+                </table>
+            </div>
+        `;
+        document.querySelector('.page-body').appendChild(container);
+    }
+    
+    const tbody = document.getElementById('missed-sales-tbody');
+    tbody.innerHTML = data.missed_sales_list.map(ms => `
+        <tr>
+            <td>${new Date(ms.created_at).toLocaleDateString()}</td>
+            <td style="white-space: pre-wrap; font-size: 14px;">${ms.reason.replace('Missed sale for: ', '')}</td>
+            <td style="color: #f56565; font-weight: bold;">${formatCurrency(ms.amount)}</td>
+        </tr>
+    `).join('');
 }
 
 function initCharts(data) {

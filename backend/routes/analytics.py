@@ -62,9 +62,8 @@ def get_dashboard_analytics():
 
     # 5. Missed Sales (Lost Opportunities)
     from models import MissedSale
-    missed_sales_total = db.session.query(
-        func.sum(MissedSale.amount)
-    ).filter(MissedSale.user_id == u.id).scalar() or 0
+    missed_sales_records = MissedSale.query.filter_by(user_id=u.id).order_by(MissedSale.created_at.desc()).limit(10).all()
+    missed_sales_total = sum(ms.amount for ms in missed_sales_records) if missed_sales_records else 0
 
     return jsonify({
         'total_orders': totals.total_orders or 0,
@@ -72,5 +71,6 @@ def get_dashboard_analytics():
         'revenue_by_date': revenue_by_date,
         'top_products': top_products_data,
         'sales_by_role': sales_by_role_data,
-        'missed_sales': float(missed_sales_total)
+        'missed_sales_total': float(missed_sales_total),
+        'missed_sales_list': [ms.to_dict() for ms in missed_sales_records]
     })

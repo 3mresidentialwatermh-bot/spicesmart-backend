@@ -262,8 +262,7 @@ async function submitStatusUpdate() {
     const orderId = document.getElementById('status-order-id').value;
     const newStatus = document.getElementById('new-status-select').value;
     
-    let payload = { status: newStatus };
-    
+    const payload = { status: newStatus };
     if (newStatus === 'shipped') {
         const tracking = prompt("Enter tracking number (optional):");
         if (tracking !== null) {
@@ -275,12 +274,39 @@ async function submitStatusUpdate() {
     }
 
     try {
-        const res = await apiRequest('PUT', `/orders/${orderId}/status`, payload);
+        const btn = event.target;
+        const oldText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+        
+        // We have to use apiRequest directly for payload since api.updateOrderStatus doesn't accept tracking payload, but wait, apiRequest is not exported globally.
+        // Let's just modify api.js slightly to accept payload, or just do a manual fetch if needed.
+        // Actually, the easiest is to just use fetch with getToken() like downloadInvoice does!
+        const res = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getToken() 
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Failed to update status');
+        }
+
         showToast('Order status updated successfully', 'success');
         closeStatusModal();
         loadOrders(); // Refresh table
     } catch (err) {
         showToast(err.message, 'error');
+    } finally {
+        const btn = document.querySelector('#status-update-modal .btn-primary');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Update Status';
+        }
     }
 }
 

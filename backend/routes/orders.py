@@ -114,7 +114,13 @@ def place_order():
                 from models import MissedSale
                 from email_utils import send_inventory_alert
                 
-                ms = MissedSale(user_id=seller.id, amount=total, reason="Insufficient stock for cart")
+                missed_products = []
+                for item in items_data:
+                    p = Product.query.get(item['product_id'])
+                    if p: missed_products.append(f"{item['quantity']}x {p.name}")
+                reason_str = "Missed sale for: " + ", ".join(missed_products)
+                
+                ms = MissedSale(user_id=seller.id, amount=total, reason=reason_str)
                 db.session.add(ms)
                 send_inventory_alert(seller, total)
                 

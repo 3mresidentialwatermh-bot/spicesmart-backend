@@ -17,7 +17,10 @@ def list_products():
     category = request.args.get('category')
     search   = request.args.get('search', '')
 
-    q = Product.query.filter_by(is_active=True)
+    q = Product.query
+    if u.role != 'admin':
+        q = q.filter_by(is_active=True)
+        
     if category:
         q = q.filter_by(category=category)
     if search:
